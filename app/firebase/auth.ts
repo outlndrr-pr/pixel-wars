@@ -6,40 +6,56 @@ import {
   AuthError
 } from 'firebase/auth';
 
-// Helper function to wait for auth initialization with exponential backoff
-const waitForAuth = async (maxAttempts = 3): Promise<void> => {
+// Enhanced helper function to wait for auth initialization with exponential backoff
+const waitForAuth = async (maxAttempts = 5): Promise<void> => {
   let attempts = 0;
-  while (!auth && attempts < maxAttempts) {
+  while ((!auth || auth === null) && attempts < maxAttempts) {
     const delay = Math.pow(2, attempts) * 1000; // Exponential backoff
+    console.log(`Waiting for auth to initialize (attempt ${attempts + 1}/${maxAttempts})...`);
     await new Promise(resolve => setTimeout(resolve, delay));
     attempts++;
   }
   if (!auth) {
+    console.error('Firebase Auth failed to initialize after multiple attempts');
     throw new Error('Firebase Auth failed to initialize');
   }
 };
 
-// Sign in anonymously with retry logic
-export const signInAnonymousUser = async (retries = 2) => {
+// Sign in anonymously with improved retry logic
+export const signInAnonymousUser = async (retries = 3) => {
   let lastError: Error | null = null;
   
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       await waitForAuth();
       if (!auth) {
+        console.error('Firebase Auth is not initialized');
         throw new Error('Firebase Auth is not initialized');
       }
 
+      console.log('Attempting to sign in anonymously...');
       const result = await signInAnonymously(auth);
       console.log('Successfully signed in anonymously');
       return result.user;
     } catch (error) {
       lastError = error as Error;
-      console.warn(`Sign in attempt ${attempt + 1} failed:`, error);
+      const authError = error as AuthError;
       
-      if (attempt < retries) {
-        // Wait before retrying
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      // Handle specific Firebase auth errors
+      if (authError.code === 'auth/configuration-not-found') {
+        console.error('Firebase configuration not found. Check your Firebase configuration and environment variables.');
+        // Wait longer for retries on this specific error
+        if (attempt < retries) {
+          const waitTime = Math.pow(2, attempt + 1) * 1500;
+          console.log(`Waiting ${waitTime/1000} seconds before retry ${attempt + 1}/${retries}...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      } else {
+        console.warn(`Sign in attempt ${attempt + 1} failed:`, error);
+        if (attempt < retries) {
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        }
       }
     }
   }

@@ -223,11 +223,11 @@ export function PixelWarProvider({ children }: { children: ReactNode }) {
   const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
   
   // Calculate if user can place a pixel (considering events)
-  const canPlacePixel = user?.teamId !== null && cooldownRemaining === 0;
+  const canPlacePixel = (user?.teamId !== null && user?.teamId !== undefined) && cooldownRemaining === 0;
   
   // Calculate if user can use power-ups
-  const canUseColorBomb = user?.teamId !== null && colorBombCooldown === 0;
-  const canUseTerritoryShield = user?.teamId !== null && territoryShieldCooldown === 0;
+  const canUseColorBomb = (user?.teamId !== null && user?.teamId !== undefined) && colorBombCooldown === 0;
+  const canUseTerritoryShield = (user?.teamId !== null && user?.teamId !== undefined) && territoryShieldCooldown === 0;
   
   // Set isClient to true on mount
   useEffect(() => {
@@ -236,8 +236,18 @@ export function PixelWarProvider({ children }: { children: ReactNode }) {
 
   // Subscribe to auth state changes
   useEffect(() => {
-    if (!isClient || !auth || !db) return;
+    if (!isClient) return;
+    
+    // Wait for auth and db to be available
+    if (!auth || !db) {
+      console.log('Waiting for Firebase Auth and Firestore to initialize...');
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 5000); // Safety timeout
+      return () => clearTimeout(timer);
+    }
 
+    console.log('Setting up auth state listener');
     const unsubscribe = onAuthChange(async (firebaseUser) => {
       if (firebaseUser) {
         try {
@@ -267,6 +277,7 @@ export function PixelWarProvider({ children }: { children: ReactNode }) {
       } else {
         // No user, try anonymous sign in
         try {
+          console.log('No firebase user, attempting anonymous sign-in');
           await signInAnonymousUser();
         } catch (error) {
           console.error('Error signing in anonymously:', error);
@@ -278,6 +289,22 @@ export function PixelWarProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, [isClient]);
+  
+  // Fix for the null user.teamId error by initializing with a fallback value
+  // Add this right after the above effect
+  useEffect(() => {
+    // Initialize with a default user to prevent null exceptions during rendering
+    if (!user && !isLoading && isClient) {
+      console.log('Initializing with default user to prevent errors');
+      setUser({
+        id: generateUserId(),
+        teamId: null,
+        lastPixelPlacement: null,
+        pixelsPlaced: 0,
+        achievements: DEFAULT_ACHIEVEMENTS,
+      });
+    }
+  }, [user, isLoading, isClient]);
 
   // Subscribe to canvas updates
   useEffect(() => {
