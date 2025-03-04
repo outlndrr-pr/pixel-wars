@@ -21,81 +21,106 @@ export default function Home() {
   if (!isMounted) {
     // Return a simple loading state or skeleton UI to prevent hydration errors
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-xl">Loading Pixel War...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-12 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+          <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
       </div>
     );
   }
   
   return (
     <PixelWarProvider>
-      <div className="min-h-screen bg-gray-100">
-        <header className="bg-white shadow-sm">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex justify-between items-center">
+      <div className="flex flex-col min-h-screen">
+        {/* Modern header with glass effect */}
+        <header className="sticky top-0 z-10 backdrop-blur-sm bg-white/70 dark:bg-black/70 border-b border-[var(--border)]">
+          <div className="container mx-auto px-4 h-[var(--header-height)] flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">P</div>
               <div>
-                <h1 className="text-2xl font-bold text-center sm:text-left">Pixel War</h1>
-                <p className="text-gray-600 text-center sm:text-left">A collaborative pixel-placing team battle</p>
+                <h1 className="text-xl font-bold tracking-tight">Pixel War</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Team-based pixel canvas</p>
               </div>
-              
-              <button
-                onClick={() => setShowAchievements(prev => !prev)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center"
-              >
-                <span className="mr-2">{showAchievements ? '🎮' : '🏆'}</span>
-                {showAchievements ? 'Back to Game' : 'Achievements'}
-              </button>
             </div>
+            
+            <button
+              onClick={() => setShowAchievements(prev => !prev)}
+              className="btn btn-secondary flex items-center space-x-2"
+            >
+              <span>{showAchievements ? '🎮' : '🏆'}</span>
+              <span>{showAchievements ? 'Back to Game' : 'Achievements'}</span>
+            </button>
           </div>
         </header>
         
-        <main className="container mx-auto px-4 py-8">
+        <main className="flex-grow container mx-auto px-4 py-8">
           {showAchievements ? (
-            <AchievementsPanel />
+            <div className="card p-6 animate-fade-in">
+              <AchievementsPanel />
+            </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Main canvas area */}
-              <div className="lg:col-span-2 space-y-4">
-                <div className="bg-white p-4 rounded-lg shadow-md">
-                  <h2 className="text-xl font-bold mb-4">Canvas</h2>
-                  <div className="aspect-square w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Main canvas area - takes up more space */}
+              <div className="lg:col-span-3 space-y-6">
+                <div className="card p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">Canvas</h2>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                      <span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                      Live
+                    </div>
+                  </div>
+                  <div className="aspect-square w-full overflow-hidden rounded-lg border border-[var(--border)]">
                     <PixelCanvas />
                   </div>
-                  <p className="text-sm text-gray-500 mt-4">
-                    Pan with middle or right mouse button, zoom with mouse wheel.
-                  </p>
                 </div>
                 
                 <StatusBar />
               </div>
               
-              {/* Sidebar */}
+              {/* Sidebar - more compact */}
               <div className="space-y-6">
                 <TeamSelector />
                 <ColorPicker />
                 
-                <div className="bg-white p-4 rounded-lg shadow-md">
-                  <h2 className="text-xl font-bold mb-4">About Pixel War</h2>
-                  <p className="text-gray-700 mb-2">
-                    Pixel War is a collaborative canvas where teams compete for territory by placing colored pixels.
-                  </p>
-                  <p className="text-gray-700 mb-2">
-                    Join a team, wait for your cooldown timer, and place pixels to help your team dominate the canvas!
-                  </p>
-                  <p className="text-gray-700">
-                    This project is inspired by Reddit's r/Place experiment.
-                  </p>
+                <div className="card p-6">
+                  <h2 className="text-xl font-bold mb-4">About</h2>
+                  <div className="space-y-3 text-sm">
+                    <p className="text-gray-700 dark:text-gray-300">
+                      Pixel War is a collaborative canvas where teams compete for territory by placing colored pixels.
+                    </p>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      Join a team, wait for your cooldown timer, and place pixels to help your team dominate the canvas!
+                    </p>
+                    <div className="pt-2 text-xs text-gray-500 dark:text-gray-400">
+                      Inspired by Reddit's r/Place experiment
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
         </main>
         
-        <footer className="bg-white mt-8 py-6 border-t">
+        <footer className="border-t border-[var(--border)] py-6 mt-auto">
           <div className="container mx-auto px-4">
-            <p className="text-center text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} Pixel War - Built with Next.js and React
-            </p>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                &copy; {new Date().getFullYear()} Pixel War
+              </p>
+              <div className="flex space-x-4 mt-4 md:mt-0">
+                <a href="#" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                  Terms
+                </a>
+                <a href="#" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                  Privacy
+                </a>
+                <a href="#" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                  GitHub
+                </a>
+              </div>
+            </div>
           </div>
         </footer>
         

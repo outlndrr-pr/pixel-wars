@@ -17,37 +17,53 @@ export function TeamSelector() {
   const totalPixels = sortedTeams.reduce((sum, team) => sum + getTeamPixelCount(team.id), 0);
   
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Select Your Team</h2>
+    <div className="card p-6">
+      <h2 className="text-lg font-bold mb-4">Teams</h2>
       
-      {user.teamId ? (
-        <>
-          <div className="mb-4 p-3 border rounded-md bg-gray-50">
+      {user?.teamId ? (
+        <div className="mb-5 p-4 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+          <div className="flex items-center gap-3 mb-2">
+            <div 
+              className="w-5 h-5 rounded-full" 
+              style={{ backgroundColor: teams.find(t => t.id === user.teamId)?.color }}
+            />
             <p className="font-medium">
-              You are part of{' '}
-              <span style={{ color: teams.find(t => t.id === user.teamId)?.color }}>
+              You're on{' '}
+              <span className="font-bold" style={{ color: teams.find(t => t.id === user.teamId)?.color }}>
                 {teams.find(t => t.id === user.teamId)?.name}
               </span>
             </p>
-            <p className="text-sm text-gray-600 mt-1">
-              You can switch teams, but it's better to stick with one team for coordination!
-            </p>
           </div>
-          
-          <h3 className="font-semibold mb-2">Territory Control</h3>
-        </>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            You can switch teams, but it's better to stick with one for coordination.
+          </p>
+        </div>
       ) : (
-        <p className="mb-4 text-gray-700">Join a team to place pixels on the canvas!</p>
+        <div className="mb-5 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/30">
+          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+            Join a team to start placing pixels on the canvas!
+          </p>
+        </div>
       )}
+      
+      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Territory Control</h3>
       
       <div className="space-y-4">
         {sortedTeams.map(team => {
           const pixelCount = getTeamPixelCount(team.id);
           const percentage = totalPixels === 0 ? 0 : Math.round((pixelCount / totalPixels) * 100);
+          const isUserTeam = user?.teamId === team.id;
           
           return (
-            <div key={team.id} className="border rounded-md p-3 transition hover:shadow-sm">
-              <div className="flex justify-between items-center mb-2">
+            <div 
+              key={team.id} 
+              className={`rounded-lg p-4 transition-all duration-200 ${
+                isUserTeam 
+                  ? 'border-2 border-[var(--primary)]' 
+                  : 'border border-[var(--border)] hover:shadow-md'
+              }`}
+            >
+              <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-2">
                   <div 
                     className="w-4 h-4 rounded-full" 
@@ -57,20 +73,21 @@ export function TeamSelector() {
                 </div>
                 
                 <button
-                  className={`px-3 py-1 rounded-full text-sm transition ${
-                    user.teamId === team.id
-                      ? 'bg-gray-200 text-gray-700'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                  className={`px-3 py-1 rounded-full text-sm transition-all ${
+                    isUserTeam
+                      ? 'bg-[var(--secondary)] text-gray-500 dark:text-gray-400 cursor-default'
+                      : 'bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]'
                   }`}
                   onClick={() => joinTeam(team.id as TeamId)}
-                  disabled={user.teamId === team.id}
+                  disabled={isUserTeam}
+                  aria-label={isUserTeam ? 'Current team' : `Join ${team.name}`}
                 >
-                  {user.teamId === team.id ? 'Current Team' : 'Join'}
+                  {isUserTeam ? 'Current' : 'Join'}
                 </button>
               </div>
               
               {/* Progress bar */}
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-[var(--secondary)] rounded-full overflow-hidden">
                 <div 
                   className="h-full transition-all duration-500 ease-out"
                   style={{ 
@@ -80,9 +97,9 @@ export function TeamSelector() {
                 />
               </div>
               
-              <div className="flex justify-between text-xs text-gray-600 mt-1">
-                <span>{pixelCount} pixels</span>
-                <span>{percentage}%</span>
+              <div className="flex justify-between text-xs mt-2">
+                <span className="text-gray-500 dark:text-gray-400">{pixelCount.toLocaleString()} pixels</span>
+                <span className="font-medium">{percentage}%</span>
               </div>
             </div>
           );

@@ -30,36 +30,36 @@ export function ColorPicker() {
   const { selectedColor, setSelectedColor, user, teams } = usePixelWar();
   
   // Get user's team color
-  const userTeamColor = user.teamId 
-    ? teams.find(team => team.id === user.teamId)?.color 
+  const userTeamColor = user?.teamId 
+    ? teams.find(team => team.id === user?.teamId)?.color 
     : null;
   
   return (
-    <div className="bg-white p-3 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold mb-2">Choose a color</h3>
+    <div className="card p-6">
+      <h3 className="text-lg font-bold mb-4">Color Palette</h3>
       
       {/* Team color indicator */}
       {userTeamColor && (
-        <div className="mb-3 p-2 border rounded-md">
+        <div className="mb-4 p-3 rounded-md bg-[var(--secondary)] border border-[var(--border)]">
           <div className="flex items-center gap-2">
             <div 
-              className="w-6 h-6 rounded-full border border-gray-300" 
+              className="w-6 h-6 rounded-full border border-[var(--border)] shadow-sm" 
               style={{ backgroundColor: userTeamColor }}
             />
-            <span className="text-sm">Your team color</span>
+            <span className="text-sm font-medium">Your team color</span>
           </div>
         </div>
       )}
       
       {/* Color grid */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-3">
         {COLORS.map(color => (
           <button
             key={color}
-            className={`w-8 h-8 rounded-full border-2 transition-all ${
+            className={`w-10 h-10 rounded-lg transition-all duration-200 shadow-sm ${
               selectedColor === color 
-                ? 'border-black scale-110' 
-                : 'border-gray-300 hover:scale-105'
+                ? 'ring-2 ring-[var(--primary)] ring-offset-2 scale-110' 
+                : 'hover:scale-105 border border-[var(--border)]'
             }`}
             style={{ backgroundColor: color }}
             onClick={() => setSelectedColor(color)}
@@ -69,12 +69,15 @@ export function ColorPicker() {
       </div>
       
       {/* Selected color indicator */}
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-4 flex items-center gap-3 p-3 rounded-md bg-[var(--secondary)]">
         <div 
-          className="w-6 h-6 rounded-full border border-gray-300" 
+          className="w-8 h-8 rounded-md shadow-sm" 
           style={{ backgroundColor: selectedColor }}
         />
-        <span className="text-sm">Selected: {selectedColor}</span>
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500 dark:text-gray-400">Selected</span>
+          <span className="text-sm font-mono">{selectedColor}</span>
+        </div>
       </div>
     </div>
   );
