@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pixel War
+
+A collaborative pixel canvas where teams compete for territory by placing colored pixels, inspired by Reddit's r/Place experiment.
+
+## Features
+
+- 🎨 Real-time pixel placement on a shared canvas
+- 👥 Team-based gameplay with territory control
+- ⏱️ Cooldown system to balance contributions
+- 🔍 Pan and zoom functionality to navigate the canvas
+- 🎭 Customizable color selection
+- 📊 Team statistics and progress tracking
+
+## Technologies
+
+- Next.js 14+ with React
+- TypeScript for type safety
+- Tailwind CSS for styling
+- HTML5 Canvas for rendering
+- LocalStorage for data persistence
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.17 or later
+- npm or yarn
+
+### Installation
+
+1. Clone the repository or download the source code
+2. Navigate to the project directory
+3. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### Development
+
+Start the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build the application for production:
 
-## Learn More
+```bash
+npm run build
+# or
+yarn build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Start the production server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm start
+# or
+yarn start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How to Play
 
-## Deploy on Vercel
+1. Choose a team to join (Red, Blue, Green, or Yellow)
+2. Select a color from the palette
+3. Click on the canvas to place a pixel
+4. Wait for the cooldown timer to reset before placing another pixel
+5. Collaborate with your team to control territory on the canvas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Future Improvements
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Server-side persistence for the canvas state
+- User authentication and profiles
+- Team chat or communication features
+- Special abilities or power-ups for teams
+- Timed events or challenges
+- Mobile-optimized controls
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Inspired by Reddit's r/Place social experiment
+- Built with Next.js and React
+
+---
+
+Made with ❤️ by [Your Name]
