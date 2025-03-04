@@ -38,6 +38,10 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
   const [touchStartPos, setTouchStartPos] = useState<{ x: number, y: number } | null>(null);
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
 
+  // Move hooks to component level
+  const colorBomb = useColorBomb();
+  const territoryShield = useTerritoryShield();
+
   // Set mounted state after component mounts to prevent hydration mismatch
   useEffect(() => {
     setIsMounted(true);
@@ -245,7 +249,7 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
         // Make sure we don't go out of bounds with the 2x2 pattern
         if (x + 1 < canvasState.width && y + 1 < canvasState.height) {
           try {
-            useColorBomb(x, y);
+            colorBomb.trigger(e);
             setIsColorBombMode(false);
           } catch (error) {
             console.error("Error using color bomb:", error);
@@ -255,7 +259,7 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
         // Make sure we don't go out of bounds with the 5x5 pattern
         if (x + 4 < canvasState.width && y + 4 < canvasState.height) {
           try {
-            useTerritoryShield(x, y);
+            territoryShield.trigger(e);
             setIsTerritoryShieldMode(false);
           } catch (error) {
             console.error("Error using territory shield:", error);
@@ -499,7 +503,7 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
           // Make sure we don't go out of bounds with the 2x2 pattern
           if (x + 1 < canvasState.width && y + 1 < canvasState.height) {
             try {
-              useColorBomb(x, y);
+              colorBomb.trigger(e);
               setIsColorBombMode(false);
             } catch (error) {
               console.error("Error using color bomb:", error);
@@ -509,7 +513,7 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
           // Make sure we don't go out of bounds with the 5x5 pattern
           if (x + 4 < canvasState.width && y + 4 < canvasState.height) {
             try {
-              useTerritoryShield(x, y);
+              territoryShield.trigger(e);
               setIsTerritoryShieldMode(false);
             } catch (error) {
               console.error("Error using territory shield:", error);

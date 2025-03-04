@@ -32,9 +32,7 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   },
   experimental: {
-    serverActions: {
-      enabled: true
-    }
+    serverActions: true
   },
   // Transpile specific modules
   transpilePackages: ['firebase', '@firebase'],
