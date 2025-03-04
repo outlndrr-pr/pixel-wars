@@ -35,7 +35,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       enabled: true
-    },
+    }
   },
   // Transpile specific modules
   transpilePackages: ['firebase', '@firebase'],
