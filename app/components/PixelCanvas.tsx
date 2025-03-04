@@ -38,10 +38,6 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
   const [touchStartPos, setTouchStartPos] = useState<{ x: number, y: number } | null>(null);
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
 
-  // Move hooks to component level
-  const colorBomb = useColorBomb();
-  const territoryShield = useTerritoryShield();
-
   // Set mounted state after component mounts to prevent hydration mismatch
   useEffect(() => {
     setIsMounted(true);
@@ -249,45 +245,24 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
         // Make sure we don't go out of bounds with the 2x2 pattern
         if (x + 1 < canvasState.width && y + 1 < canvasState.height) {
           try {
-            colorBomb.trigger(e);
+            useColorBomb(x, y);
             setIsColorBombMode(false);
           } catch (error) {
-            console.error("Error using color bomb:", error);
+            console.error('Error using color bomb:', error);
           }
         }
       } else if (isTerritoryShieldMode && canUseTerritoryShield) {
-        // Make sure we don't go out of bounds with the 5x5 pattern
+        // Make sure we don't go out of bounds with the shield pattern
         if (x + 4 < canvasState.width && y + 4 < canvasState.height) {
           try {
-            territoryShield.trigger(e);
+            useTerritoryShield(x, y);
             setIsTerritoryShieldMode(false);
           } catch (error) {
-            console.error("Error using territory shield:", error);
+            console.error('Error using territory shield:', error);
           }
         }
       } else if (canPlacePixel) {
-        // Check if the position is within a shielded area
-        const shield = activePowerUps.find(p => 
-          p.type === 'territoryShield' && 
-          p.startTime && 
-          p.endTime && 
-          p.endTime > Date.now() &&
-          p.affectedArea &&
-          x >= p.affectedArea.x && 
-          x < p.affectedArea.x + p.affectedArea.width &&
-          y >= p.affectedArea.y && 
-          y < p.affectedArea.y + p.affectedArea.height &&
-          p.teamId !== user.teamId // Can't place if shield belongs to another team
-        );
-        
-        // Only place if not shielded by another team
-        if (!shield) {
-          try {
-            placePixel(x, y);
-          } catch (error) {
-            console.error("Error placing pixel:", error);
-          }
-        }
+        placePixel(x, y);
       }
     }
   };
@@ -483,74 +458,57 @@ export function PixelCanvas({ pixelSize = 10 }: PixelCanvasProps) {
   
   // Handle touch end
   const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!user.teamId) return;
+    
+    // Don't process touch events until component is mounted
+    if (!isMounted) return;
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    // Don't process touches until component is mounted
-    if (!isMounted) return;
-    
-    if (e.touches.length === 0 && touchStartPos && !isPanning) {
-      // It was a tap, place a pixel
+    // Only handle single touch for pixel placement
+    if (e.changedTouches.length === 1) {
+      const touch = e.changedTouches[0];
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
       
-      const x = Math.floor(((touchStartPos.x - rect.left) * scaleX - panOffset.x) / (pixelSize * zoom));
-      const y = Math.floor(((touchStartPos.y - rect.top) * scaleY - panOffset.y) / (pixelSize * zoom));
+      // Calculate the position considering zoom and pan
+      const x = Math.floor(((touch.clientX - rect.left) * scaleX - panOffset.x) / (pixelSize * zoom));
+      const y = Math.floor(((touch.clientY - rect.top) * scaleY - panOffset.y) / (pixelSize * zoom));
       
-      if (x >= 0 && x < canvasState.width && y >= 0 && y < canvasState.height) {
+      // Only place if within bounds and not panning
+      if (!isPanning && x >= 0 && x < canvasState.width && y >= 0 && y < canvasState.height) {
         if (isColorBombMode && canUseColorBomb) {
           // Make sure we don't go out of bounds with the 2x2 pattern
           if (x + 1 < canvasState.width && y + 1 < canvasState.height) {
             try {
-              colorBomb.trigger(e);
+              useColorBomb(x, y);
               setIsColorBombMode(false);
             } catch (error) {
-              console.error("Error using color bomb:", error);
+              console.error('Error using color bomb:', error);
             }
           }
         } else if (isTerritoryShieldMode && canUseTerritoryShield) {
-          // Make sure we don't go out of bounds with the 5x5 pattern
+          // Make sure we don't go out of bounds with the shield pattern
           if (x + 4 < canvasState.width && y + 4 < canvasState.height) {
             try {
-              territoryShield.trigger(e);
+              useTerritoryShield(x, y);
               setIsTerritoryShieldMode(false);
             } catch (error) {
-              console.error("Error using territory shield:", error);
+              console.error('Error using territory shield:', error);
             }
           }
         } else if (canPlacePixel) {
-          // Check if the position is within a shielded area
-          const shield = activePowerUps.find(p => 
-            p.type === 'territoryShield' && 
-            p.startTime && 
-            p.endTime && 
-            p.endTime > Date.now() &&
-            p.affectedArea &&
-            x >= p.affectedArea.x && 
-            x < p.affectedArea.x + p.affectedArea.width &&
-            y >= p.affectedArea.y && 
-            y < p.affectedArea.y + p.affectedArea.height &&
-            p.teamId !== user.teamId // Can't place if shield belongs to another team
-          );
-          
-          // Only place if not shielded by another team
-          if (!shield) {
-            try {
-              placePixel(x, y);
-            } catch (error) {
-              console.error("Error placing pixel:", error);
-            }
-          }
+          placePixel(x, y);
         }
       }
     }
     
-    // Reset touch state
+    // Reset touch tracking
     setTouchStartPos(null);
     setLastTouchDistance(null);
     setIsPanning(false);
-    lastPositionRef.current = null;
   };
   
   // Helper function to calculate distance between two touch points
