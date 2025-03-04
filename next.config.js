@@ -41,33 +41,23 @@ const nextConfig = {
   transpilePackages: ['firebase', '@firebase'],
   // Add proper headers for cross-origin access
   async headers() {
-    const headers = [
-      {
-        key: 'Access-Control-Allow-Origin',
-        value: process.env.NODE_ENV === 'development' ? '*' : 'https://pixel-wars-ab9f9.firebaseapp.com'
-      },
-      {
-        key: 'Access-Control-Allow-Methods',
-        value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT'
-      },
-      {
-        key: 'Access-Control-Allow-Headers',
-        value: 'X-Requested-With, Content-Type, Authorization, Accept'
-      },
-      {
-        key: 'Access-Control-Allow-Credentials',
-        value: 'true'
-      }
-    ];
-
     return [
       {
         source: '/:path*',
-        headers
-      },
-      {
-        source: '/api/:path*',
-        headers
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'X-Requested-With, Content-Type, Authorization'
+          }
+        ]
       }
     ];
   },
@@ -78,17 +68,6 @@ const nextConfig = {
       ignoreBuildErrors: true
     }
   }),
-  // Force HTTPS in production
-  async rewrites() {
-    return process.env.NODE_ENV === 'production'
-      ? [
-          {
-            source: '/:path*',
-            destination: 'https://pixel-wars-ab9f9.firebaseapp.com/:path*'
-          }
-        ]
-      : []
-  }
 }
 
 module.exports = nextConfig 
