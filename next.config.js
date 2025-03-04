@@ -31,40 +31,7 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   },
-  experimental: {
-    serverActions: true
-  },
-  // Transpile specific modules
-  transpilePackages: ['firebase', '@firebase'],
-  // Add proper headers for cross-origin access
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*'
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT'
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value: 'X-Requested-With, Content-Type, Authorization'
-          }
-        ]
-      }
-    ];
-  },
-  // Development specific settings
-  ...(process.env.NODE_ENV === 'development' && {
-    reactStrictMode: true,
-    typescript: {
-      ignoreBuildErrors: true
-    }
-  }),
+  transpilePackages: ['firebase', '@firebase']
 }
 
 module.exports = nextConfig 
