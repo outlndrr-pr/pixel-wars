@@ -24,7 +24,7 @@ const COLORS = [
 ];
 
 export function ColorPicker() {
-  const { selectedColor, setSelectedColor, user, teams, colors } = usePixelWar();
+  const { selectedColor, setSelectedColor, user, teams } = usePixelWar();
   
   // Get user's team color
   const userTeamColor = user?.teamId 
