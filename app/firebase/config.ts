@@ -14,7 +14,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Fallback configuration for development if environment variables are missing
@@ -59,6 +59,15 @@ function initializeFirebase() {
     }
 
     const auth = getAuth(app);
+    
+    // Set auth persistence to LOCAL to avoid CORS issues with iframe auth
+    import('firebase/auth').then(({ browserLocalPersistence, setPersistence }) => {
+      setPersistence(auth, browserLocalPersistence)
+        .catch((error) => {
+          console.error('Error setting auth persistence:', error);
+        });
+    });
+    
     const db = getFirestore(app);
     let analytics: Analytics | undefined;
 

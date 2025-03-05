@@ -27,7 +27,8 @@ import {
   onSnapshot,
   query,
   where,
-  serverTimestamp
+  serverTimestamp,
+  Timestamp
 } from 'firebase/firestore';
 
 // Default teams
@@ -352,9 +353,13 @@ export function PixelWarProvider({ children }: { children: ReactNode }) {
     if (!isClient || !db || !user?.teamId) return;
 
     const powerUpsRef = collection(db, COLLECTIONS.POWERUPS);
+    // Create a new Date object for the current time and convert to Firestore Timestamp
+    const now = new Date();
+    const nowTimestamp = Timestamp.fromDate(now);
+    
     const activeQuery = query(
       powerUpsRef,
-      where('endTime', '>', serverTimestamp())
+      where('endTime', '>', nowTimestamp)
     );
 
     const unsubscribe = onSnapshot(activeQuery, (snapshot) => {

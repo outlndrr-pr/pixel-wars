@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import './globals.css'
+import type { Metadata } from 'next'
+import { PixelWarProvider } from './contexts/PixelWarContext'
 import { Inter } from "next/font/google";
-import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -9,22 +10,27 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pixel War - Team-based Pixel Placing Canvas",
-  description: "A collaborative pixel canvas where teams compete for territory by placing colored pixels, inspired by Reddit's r/Place.",
+  title: 'Pixel War',
+  description: 'A collaborative pixel art canvas',
   keywords: ["pixel", "place", "canvas", "collaboration", "team", "game", "r/place"],
   authors: [{ name: "Pixel War Team" }],
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content="frame-ancestors 'self' https://pixel-wars-ab9f9.firebaseapp.com https://pixel-8k2n5fvdm-outlndrrs-projects.vercel.app" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]`}>
-        {children}
+        <PixelWarProvider>
+          {children}
+        </PixelWarProvider>
       </body>
     </html>
-  );
+  )
 }

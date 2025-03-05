@@ -1,6 +1,7 @@
 'use client';
 
 import { usePixelWar } from '../contexts/PixelWarContext';
+import { Card } from './ui';
 
 // Array of colors for the color picker
 const COLORS = [
@@ -35,15 +36,13 @@ export function ColorPicker() {
     : null;
   
   return (
-    <div className="card p-6">
-      <h3 className="text-lg font-bold mb-4">Color Palette</h3>
-      
+    <Card title="Color Palette" className="animate-fade-in">
       {/* Team color indicator */}
       {userTeamColor && (
-        <div className="mb-4 p-3 rounded-md bg-[var(--secondary)] border border-[var(--border)]">
+        <div className="mb-4 p-3 rounded-md bg-[var(--color-background)] border border-[var(--color-border)]">
           <div className="flex items-center gap-2">
             <div 
-              className="w-6 h-6 rounded-full border border-[var(--border)] shadow-sm" 
+              className="w-6 h-6 rounded-full border border-[var(--color-border)] shadow-sm" 
               style={{ backgroundColor: userTeamColor }}
             />
             <span className="text-sm font-medium">Your team color</span>
@@ -56,10 +55,10 @@ export function ColorPicker() {
         {COLORS.map(color => (
           <button
             key={color}
-            className={`w-10 h-10 rounded-lg transition-all duration-200 shadow-sm ${
+            className={`w-12 h-12 rounded-lg transition-all duration-200 shadow-sm ${
               selectedColor === color 
-                ? 'ring-2 ring-[var(--primary)] ring-offset-2 scale-110' 
-                : 'hover:scale-105 border border-[var(--border)]'
+                ? 'ring-2 ring-[var(--color-accent)] ring-offset-2 scale-110' 
+                : 'hover:scale-105 border border-[var(--color-border)]'
             }`}
             style={{ backgroundColor: color }}
             onClick={() => setSelectedColor(color)}
@@ -69,16 +68,16 @@ export function ColorPicker() {
       </div>
       
       {/* Selected color indicator */}
-      <div className="mt-4 flex items-center gap-3 p-3 rounded-md bg-[var(--secondary)]">
+      <div className="mt-4 flex items-center gap-3 p-3 rounded-md bg-[var(--color-background)]">
         <div 
-          className="w-8 h-8 rounded-md shadow-sm" 
+          className="w-10 h-10 rounded-md shadow-sm" 
           style={{ backgroundColor: selectedColor }}
         />
         <div className="flex flex-col">
-          <span className="text-xs text-gray-500 dark:text-gray-400">Selected</span>
-          <span className="text-sm font-mono">{selectedColor}</span>
+          <span className="text-xs text-[var(--color-text-secondary)]">Selected</span>
+          <span className="text-sm font-mono font-medium">{selectedColor}</span>
         </div>
       </div>
-    </div>
+    </Card>
   );
 } 
