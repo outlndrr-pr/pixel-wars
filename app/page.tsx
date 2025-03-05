@@ -58,68 +58,44 @@ export default function Home() {
               <AchievementsPanel />
             </Card>
           ) : (
-            <div className="flex flex-col space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main canvas area - left side */}
-                <div className="lg:col-span-2">
-                  <Card title="Canvas" subtitle="Place pixels to claim territory for your team" className="animate-fade-in">
-                    <div className="aspect-square w-full overflow-hidden rounded-lg border border-[var(--color-border)]">
-                      <PixelCanvas />
-                    </div>
-                  </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Main Canvas Section */}
+              <div className="lg:col-span-8 space-y-6">
+                <div className="canvas-container">
+                  <PixelCanvas />
                 </div>
                 
-                {/* Sidebar - right side */}
-                <div className="space-y-6">
-                  {/* Team selector at the top */}
-                  <TeamSelector />
-                  
-                  {/* Color Palette */}
+                <div className="card p-4">
+                  <h2 className="text-lg font-semibold mb-3">Color Palette</h2>
                   <ColorPicker />
-                  
-                  {/* Teams Progress Bars */}
-                  <StatusBar />
-                  
-                  {/* Events */}
-                  <Card title="Events" className="animate-fade-in">
-                    <div className="space-y-3 text-sm">
-                      <p className="text-[var(--color-text-secondary)]">
-                        Special events occur regularly on the canvas.
-                      </p>
-                      <p className="text-[var(--color-text-secondary)]">
-                        Participate in events to earn bonuses for your team!
-                      </p>
-                    </div>
-                  </Card>
-                  
-                  {/* Achievements */}
-                  <Card title="Achievements" className="animate-fade-in">
-                    <div className="space-y-3 text-sm">
-                      <p className="text-[var(--color-text-secondary)]">
-                        Complete achievements to showcase your skills.
-                      </p>
-                      <p className="text-[var(--color-text-secondary)]">
-                        Click the Achievements button to view all available challenges.
-                      </p>
-                    </div>
-                  </Card>
                 </div>
               </div>
-              
-              {/* About section at the bottom */}
-              <Card title="About" className="animate-fade-in">
-                <div className="space-y-3 text-sm">
-                  <p className="text-[var(--color-text-secondary)]">
-                    Pixel War is a collaborative canvas where teams compete for territory by placing colored pixels.
-                  </p>
-                  <p className="text-[var(--color-text-secondary)]">
-                    Join a team, wait for your cooldown timer, and place pixels to help your team dominate the canvas!
-                  </p>
-                  <div className="pt-2 text-xs text-[var(--color-text-tertiary)]">
-                    Inspired by Reddit's r/Place experiment
-                  </div>
+
+              {/* Sidebar */}
+              <div className="lg:col-span-4 space-y-6">
+                <div className="card p-6">
+                  <h2 className="text-lg font-semibold mb-4">Choose Your Team</h2>
+                  <TeamSelector />
                 </div>
-              </Card>
+
+                <div className="card p-6">
+                  <h2 className="text-lg font-semibold mb-4">Team Progress</h2>
+                  <StatusBar />
+                </div>
+
+                <div className="card p-6">
+                  <h2 className="text-lg font-semibold mb-4">Achievements</h2>
+                  <AchievementsPanel />
+                </div>
+
+                <div className="card p-6">
+                  <h2 className="text-lg font-semibold mb-4">About</h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Pixel War is a collaborative pixel art platform where teams compete to create beautiful artwork together.
+                    Choose your team, select your colors, and contribute to the canvas!
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </main>

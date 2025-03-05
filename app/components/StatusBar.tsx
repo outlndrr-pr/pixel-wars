@@ -28,23 +28,15 @@ export function StatusBar() {
     getTeamPixelCount
   } = usePixelWar();
   
-  // Sort teams by pixel count (most pixels first)
-  const sortedTeams = [...teams].sort((a, b) => {
-    const countA = getTeamPixelCount(a.id);
-    const countB = getTeamPixelCount(b.id);
-    return countB - countA;
-  });
-  
-  // Calculate pixel percentages for the progress bars
-  const totalPixels = sortedTeams.reduce((sum, team) => sum + getTeamPixelCount(team.id), 0);
+  const totalPixels = teams.reduce((acc, team) => acc + getTeamPixelCount(team.id), 0);
   
   return (
     <Card title="Teams Progress Bars" className="animate-fade-in">
       {/* Team progress bars */}
       <div className="space-y-4">
-        {sortedTeams.map(team => {
+        {teams.map((team) => {
           const pixelCount = getTeamPixelCount(team.id);
-          const percentage = totalPixels === 0 ? 0 : Math.round((pixelCount / totalPixels) * 100);
+          const percentage = totalPixels > 0 ? (pixelCount / totalPixels) * 100 : 0;
           const isUserTeam = user?.teamId === team.id;
           
           return (
@@ -64,17 +56,17 @@ export function StatusBar() {
                     )}
                   </span>
                 </div>
-                <span className="text-xs font-medium">{percentage}%</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {percentage.toFixed(1)}%
+                </span>
               </div>
               
-              {/* Progress bar */}
-              <div className="h-2 w-full bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ 
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
                     width: `${percentage}%`,
                     backgroundColor: team.color,
-                    boxShadow: isUserTeam ? `0 0 8px ${team.color}` : 'none'
                   }}
                 />
               </div>
