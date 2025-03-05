@@ -1,4 +1,5 @@
 import './globals.css'
+import './dark-theme.css'
 import type { Metadata } from 'next'
 import { PixelWarProvider } from './contexts/PixelWarContext'
 import { Inter } from "next/font/google";
@@ -29,7 +30,13 @@ export default function RootLayout({
         <meta httpEquiv="Access-Control-Allow-Methods" content="GET, POST, PUT, DELETE, OPTIONS" />
         <meta httpEquiv="Access-Control-Allow-Headers" content="Content-Type, Authorization" />
       </head>
-      <body className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]`}>
+      <body 
+        className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]`}
+        style={{ 
+          backgroundColor: '#121212', 
+          color: '#ffffff' 
+        }}
+      >
         <PixelWarProvider>
           {children}
         </PixelWarProvider>
