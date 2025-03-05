@@ -185,6 +185,7 @@ interface PixelWarContextType {
   territoryShieldCooldown: number;
   recentAchievements: Achievement[];
   clearRecentAchievements: () => void;
+  userAchievements: string[];
 }
 
 const PixelWarContext = createContext<PixelWarContextType | null>(null);
@@ -741,6 +742,7 @@ export function PixelWarProvider({ children }: { children: ReactNode }) {
         territoryShieldCooldown,
         recentAchievements,
         clearRecentAchievements,
+        userAchievements: user.achievements.map(a => a.id),
       }}
     >
       {children}

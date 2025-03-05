@@ -1,48 +1,48 @@
+'use client';
+
 import React from 'react';
 
 interface CardProps {
   children: React.ReactNode;
+  className?: string;
   title?: string;
   subtitle?: string;
-  className?: string;
-  headerActions?: React.ReactNode;
-  footer?: React.ReactNode;
-  noPadding?: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({
-  children,
-  title,
-  subtitle,
-  className = '',
-  headerActions,
-  footer,
-  noPadding = false,
-}) => {
-  const cardClasses = `bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm ${className}`;
-  const bodyClasses = noPadding ? '' : 'p-6';
-  
+export function Card({ children, className = '', title, subtitle }: CardProps) {
   return (
-    <div className={cardClasses}>
-      {(title || headerActions) && (
-        <div className="flex justify-between items-center p-6 pb-0">
-          <div>
-            {title && <h3 className="text-lg font-medium text-gray-900 dark:text-white">{title}</h3>}
-            {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
-          </div>
-          {headerActions && <div>{headerActions}</div>}
+    <div className={`bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden ${className}`}>
+      {(title || subtitle) && (
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+          {title && <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>}
+          {subtitle && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>}
         </div>
       )}
-      
-      <div className={bodyClasses}>
-        {children}
-      </div>
-      
-      {footer && (
-        <div className="border-t border-gray-100 dark:border-gray-700 mt-6 pt-4 px-6 pb-6">
-          {footer}
-        </div>
-      )}
+      <div className="p-5">{children}</div>
     </div>
   );
-}; 
+}
+
+export function CardHeader({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`px-5 py-4 border-b border-slate-200 dark:border-slate-700 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function CardTitle({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <h3 className={`text-lg font-semibold text-slate-900 dark:text-white ${className}`}>{children}</h3>;
+}
+
+export function CardDescription({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <p className={`mt-1 text-sm text-slate-500 dark:text-slate-400 ${className}`}>{children}</p>;
+}
+
+export function CardContent({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <div className={`p-5 ${className}`}>{children}</div>;
+}
+
+export function CardFooter({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <div className={`px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>;
+} 
