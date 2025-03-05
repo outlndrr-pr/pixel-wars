@@ -2,10 +2,8 @@
 
 import { usePixelWar } from '../contexts/PixelWarContext';
 import { EventType } from '../types';
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 
-// Helper function to format time in MM:SS
+// Helper function to format time
 function formatTime(ms: number): string {
   const seconds = Math.ceil(ms / 1000);
   return `${seconds}s`;
@@ -47,20 +45,28 @@ export function StatusBar() {
                 <span className="text-sm font-medium">
                   {team.name}
                   {isUserTeam && (
-                    <Badge variant="outline" className="ml-2">
+                    <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-slate-800">
                       You
-                    </Badge>
+                    </span>
                   )}
                 </span>
               </div>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-slate-400">
                 {percentage.toFixed(1)}%
               </span>
             </div>
             
-            <Progress value={percentage} className="h-2" />
+            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all" 
+                style={{ 
+                  width: `${percentage}%`,
+                  backgroundColor: team.color 
+                }}
+              />
+            </div>
             
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-slate-400">
               {pixelCount.toLocaleString()} pixels
             </div>
           </div>
@@ -68,22 +74,24 @@ export function StatusBar() {
       })}
 
       {user?.teamId && (
-        <div className="mt-6 pt-6 border-t">
+        <div className="mt-6 pt-6 border-t border-slate-800">
           <div className="space-y-2">
             {canPlacePixel ? (
-              <Badge variant="outline" className="w-full justify-center">
+              <div className="text-center py-2 bg-slate-800 rounded-md text-white font-medium">
                 Ready to place
-              </Badge>
+              </div>
             ) : (
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-xs text-muted-foreground">Cooldown</span>
+                  <span className="text-xs text-slate-400">Cooldown</span>
                   <span className="text-xs font-medium">{formatTime(cooldownRemaining)}</span>
                 </div>
-                <Progress 
-                  value={100 - (cooldownRemaining / 10000 * 100)} 
-                  className="h-1"
-                />
+                <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500 rounded-full transition-all" 
+                    style={{ width: `${100 - (cooldownRemaining / 10000 * 100)}%` }}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -91,10 +99,10 @@ export function StatusBar() {
       )}
 
       {!user?.teamId && (
-        <div className="mt-6 pt-6 border-t">
-          <Badge variant="outline" className="w-full justify-center text-destructive">
+        <div className="mt-6 pt-6 border-t border-slate-800">
+          <div className="text-center py-2 bg-red-900/30 rounded-md text-red-400 font-medium">
             Join a team first
-          </Badge>
+          </div>
         </div>
       )}
     </div>

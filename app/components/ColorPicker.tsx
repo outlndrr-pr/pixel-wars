@@ -1,8 +1,6 @@
 'use client';
 
 import { usePixelWar } from '../contexts/PixelWarContext';
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 // Define available colors
 const COLORS = [
@@ -18,7 +16,7 @@ export function ColorPicker() {
   return (
     <div className="space-y-4">
       {userTeam && (
-        <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-800">
           <div 
             className="w-4 h-4 rounded-full" 
             style={{ backgroundColor: userTeam.color }}
@@ -29,14 +27,11 @@ export function ColorPicker() {
       
       <div className="grid grid-cols-4 gap-2">
         {COLORS.map((color) => (
-          <Button
+          <button
             key={color}
-            variant="outline"
-            size="icon"
-            className={cn(
-              "w-full h-10 rounded-md transition-all",
-              selectedColor === color && "ring-2 ring-offset-2 ring-primary"
-            )}
+            className={`w-full h-10 rounded-md transition-all border ${
+              selectedColor === color ? 'ring-2 ring-offset-2 ring-white' : 'border-gray-700'
+            }`}
             style={{ backgroundColor: color }}
             onClick={() => setSelectedColor(color)}
           />

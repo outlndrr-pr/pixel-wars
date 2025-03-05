@@ -1,9 +1,6 @@
 'use client';
 
 import { usePixelWar } from "../contexts/PixelWarContext"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
 
 // Map achievement types to human-readable names
 const typeNames: Record<string, string> = {
@@ -62,12 +59,11 @@ export function AchievementsPanel() {
         return (
           <div
             key={achievement.id}
-            className={cn(
-              "p-4 rounded-lg border",
+            className={`p-4 rounded-lg border transition-all ${
               isUnlocked 
-                ? "bg-primary/5 border-primary/20" 
-                : "bg-muted/50 border-muted"
-            )}
+                ? 'bg-slate-800/50 border-slate-700' 
+                : 'bg-slate-900 border-slate-800'
+            }`}
           >
             <div className="flex items-start gap-3">
               <div className="text-2xl">{achievement.icon}</div>
@@ -76,11 +72,15 @@ export function AchievementsPanel() {
                   <h3 className="font-medium leading-none">
                     {achievement.title}
                   </h3>
-                  <Badge variant={isUnlocked ? "default" : "secondary"}>
+                  <span className={`px-2 py-0.5 text-xs rounded-full ${
+                    isUnlocked 
+                      ? 'bg-blue-500/20 text-blue-400' 
+                      : 'bg-slate-800 text-slate-400'
+                  }`}>
                     {isUnlocked ? "Unlocked" : "Locked"}
-                  </Badge>
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-slate-400">
                   {achievement.description}
                 </p>
               </div>

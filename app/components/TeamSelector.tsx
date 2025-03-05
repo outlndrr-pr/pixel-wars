@@ -1,8 +1,6 @@
 'use client';
 
 import { usePixelWar } from '../contexts/PixelWarContext';
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export function TeamSelector() {
   const { teams, user, joinTeam, getTeamPixelCount } = usePixelWar();
@@ -11,13 +9,13 @@ export function TeamSelector() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         {teams.map((team) => (
-          <Button
+          <button
             key={team.id}
-            variant={user?.teamId === team.id ? "default" : "outline"}
-            className={cn(
-              "h-auto py-4 flex flex-col items-center gap-2",
-              user?.teamId === team.id && "ring-2 ring-offset-2 ring-primary"
-            )}
+            className={`h-auto py-4 flex flex-col items-center gap-2 rounded-md transition-all ${
+              user?.teamId === team.id 
+                ? 'bg-slate-700 ring-2 ring-white ring-offset-2 ring-offset-slate-900' 
+                : 'bg-slate-800 hover:bg-slate-700'
+            }`}
             onClick={() => joinTeam(team.id)}
           >
             <div 
@@ -25,10 +23,10 @@ export function TeamSelector() {
               style={{ backgroundColor: team.color }}
             />
             <span className="font-medium">{team.name}</span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-slate-400">
               {getTeamPixelCount(team.id)} pixels
             </span>
-          </Button>
+          </button>
         ))}
       </div>
     </div>
