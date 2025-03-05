@@ -41,46 +41,88 @@ function initializeFirebase() {
   try {
     // Wait for window to be defined
     if (typeof window === 'undefined') {
+      console.log('Window is undefined, skipping Firebase initialization');
       return { app: null, auth: null, db: null, analytics: null };
     }
 
     // Get valid configuration
     const validConfig = getValidConfig();
+    
+    // Log the configuration being used (without sensitive data)
+    console.log('Initializing Firebase with config:', {
+      projectId: validConfig.projectId,
+      authDomain: validConfig.authDomain,
+      vercelUrl: process.env.NEXT_PUBLIC_VERCEL_URL || 'not set'
+    });
 
     let app: FirebaseApp;
     if (!getApps().length) {
-      console.log('Initializing Firebase with config:', {
-        projectId: validConfig.projectId,
-        authDomain: validConfig.authDomain
-      });
-      app = initializeApp(validConfig);
+      try {
+        app = initializeApp(validConfig);
+        console.log('Firebase app initialized successfully');
+      } catch (error) {
+        console.error('Error initializing Firebase app:', error);
+        throw error;
+      }
     } else {
       app = getApps()[0];
+      console.log('Using existing Firebase app');
     }
 
-    const auth = getAuth(app);
+    // Initialize Auth
+    let auth: Auth;
+    try {
+      auth = getAuth(app);
+      console.log('Firebase auth initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Firebase auth:', error);
+      throw error;
+    }
     
     // Set auth persistence to LOCAL to avoid CORS issues with iframe auth
-    setPersistence(auth, browserLocalPersistence)
-      .catch((error) => {
-        console.error('Error setting auth persistence:', error);
-      });
+    try {
+      setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+          console.log('Auth persistence set to LOCAL successfully');
+        })
+        .catch((error) => {
+          console.error('Error setting auth persistence:', error);
+        });
+    } catch (error) {
+      console.error('Error setting auth persistence:', error);
+    }
     
-    const db = getFirestore(app);
+    // Initialize Firestore
+    let db: Firestore;
+    try {
+      db = getFirestore(app);
+      console.log('Firestore initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Firestore:', error);
+      throw error;
+    }
+    
     let analytics: Analytics | undefined;
 
     // Initialize analytics in production only
     if (process.env.NODE_ENV === 'production') {
-      isSupported().then(supported => {
-        if (supported) {
-          analytics = getAnalytics(app);
-        }
-      });
+      try {
+        isSupported().then(supported => {
+          if (supported) {
+            analytics = getAnalytics(app);
+            console.log('Analytics initialized successfully');
+          } else {
+            console.log('Analytics not supported in this environment');
+          }
+        });
+      } catch (error) {
+        console.error('Error initializing analytics:', error);
+      }
     }
 
     return { app, auth, db, analytics };
   } catch (error) {
-    console.error('Error initializing Firebase:', error);
+    console.error('Fatal error initializing Firebase:', error);
     return { app: null, auth: null, db: null, analytics: null };
   }
 }

@@ -12,6 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "firebase": "^11.4.0",
     "firebase-functions": "^6.3.2",
     "next": "^13.5.8",
