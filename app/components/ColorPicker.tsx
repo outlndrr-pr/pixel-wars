@@ -55,10 +55,10 @@ export function ColorPicker() {
         {COLORS.map((color) => (
           <button
             key={color}
-            className={`w-full aspect-square rounded-md border-2 transition-all ${
+            className={`w-full aspect-square rounded-md transition-all duration-200 ${
               selectedColor === color 
-                ? 'border-[var(--color-accent)] scale-110 shadow-md' 
-                : 'border-gray-200 hover:scale-105'
+                ? 'ring-2 ring-[var(--color-accent)] ring-offset-2 ring-offset-[var(--color-card)] scale-110 shadow-md z-10' 
+                : 'hover:scale-105 shadow-sm'
             }`}
             style={{ backgroundColor: color }}
             onClick={() => setSelectedColor(color)}
@@ -69,15 +69,15 @@ export function ColorPicker() {
       
       {/* Selected color indicator */}
       {selectedColor && (
-        <div className="mt-4 p-2 rounded-md bg-[var(--color-background)] border border-[var(--color-border)] flex items-center justify-between">
+        <div className="mt-4 p-3 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[var(--color-border)] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div 
-              className="w-6 h-6 rounded-md border border-[var(--color-border)]" 
+              className="w-6 h-6 rounded-md shadow-inner border border-[var(--color-border-strong)]" 
               style={{ backgroundColor: selectedColor }}
             />
-            <span className="text-sm">Selected</span>
+            <span className="text-sm text-[var(--color-text-secondary)]">Selected</span>
           </div>
-          <span className="text-xs font-mono">{selectedColor}</span>
+          <span className="text-xs font-mono bg-[rgba(0,0,0,0.2)] px-2 py-1 rounded">{selectedColor}</span>
         </div>
       )}
     </Card>

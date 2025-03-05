@@ -2,46 +2,53 @@
 
 import { usePixelWar } from '../contexts/PixelWarContext';
 import { TeamId } from '../types';
-import { Card, Button, Badge, ProgressBar, RadioButton } from './ui';
+import { Card, Badge } from './ui';
 
 export function TeamSelector() {
   const { teams, user, joinTeam, getTeamPixelCount } = usePixelWar();
-  
-  // Sort teams by pixel count (most pixels first)
-  const sortedTeams = [...teams].sort((a, b) => {
-    const countA = getTeamPixelCount(a.id);
-    const countB = getTeamPixelCount(b.id);
-    return countB - countA;
-  });
-  
-  // Calculate pixel percentages for the progress bars
-  const totalPixels = sortedTeams.reduce((sum, team) => sum + getTeamPixelCount(team.id), 0);
   
   return (
     <Card title="Choose Team" className="animate-fade-in">
       <div className="flex flex-col space-y-4">
         {/* Team selection with radio buttons */}
-        <div className="flex justify-center space-x-8 mb-2">
+        <div className="grid grid-cols-2 gap-3 mb-2">
           {teams.map((team) => (
-            <div key={team.id} className="flex items-center">
-              <RadioButton
-                id={`team-${team.id}`}
-                name="team-selection"
-                checked={user?.teamId === team.id}
-                onChange={() => joinTeam(team.id)}
-                label={team.name}
-                customStyles={{
-                  labelColor: team.color,
-                  radioColor: team.color
-                }}
-              />
-            </div>
+            <button
+              key={team.id}
+              onClick={() => joinTeam(team.id)}
+              className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
+                user?.teamId === team.id 
+                  ? 'bg-[var(--color-accent-bg)] border-2 border-[var(--color-accent)]' 
+                  : 'bg-[var(--color-card)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
+              }`}
+            >
+              <div 
+                className={`w-4 h-4 rounded-full mr-3 flex items-center justify-center border-2 ${
+                  user?.teamId === team.id 
+                    ? `border-[${team.color}]` 
+                    : 'border-[var(--color-border-strong)]'
+                }`}
+              >
+                {user?.teamId === team.id && (
+                  <div 
+                    className="w-2 h-2 rounded-full" 
+                    style={{ backgroundColor: team.color }}
+                  />
+                )}
+              </div>
+              <span 
+                className="text-sm font-medium"
+                style={{ color: user?.teamId === team.id ? team.color : 'var(--color-text-primary)' }}
+              >
+                {team.name}
+              </span>
+            </button>
           ))}
         </div>
         
         {user?.teamId ? (
-          <div className="p-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)]">
-            <div className="flex items-center gap-3 mb-1">
+          <div className="p-3 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[var(--color-border)]">
+            <div className="flex items-center gap-2">
               <div 
                 className="w-4 h-4 rounded-full" 
                 style={{ backgroundColor: teams.find(t => t.id === user.teamId)?.color }}
@@ -55,7 +62,7 @@ export function TeamSelector() {
             </div>
           </div>
         ) : (
-          <div className="p-3 rounded-lg bg-[var(--color-accent-light)] border border-[var(--color-accent)] border-opacity-20">
+          <div className="p-3 rounded-lg bg-[var(--color-accent-bg)] border border-[var(--color-accent)] border-opacity-20">
             <p className="text-sm font-medium text-[var(--color-accent)] text-center">
               Select a team to start placing pixels!
             </p>

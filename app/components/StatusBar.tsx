@@ -24,25 +24,9 @@ export function StatusBar() {
     cooldownRemaining, 
     canPlacePixel, 
     user, 
-    events, 
-    colorBombCooldown,
-    territoryShieldCooldown,
-    canUseColorBomb,
-    canUseTerritoryShield,
     teams,
     getTeamPixelCount
   } = usePixelWar();
-  
-  // Format cooldown as seconds
-  const cooldownSeconds = Math.ceil(cooldownRemaining / 1000);
-  
-  // Get upcoming events
-  const upcomingEvents = events
-    .filter(event => !event.active && event.nextOccurrence)
-    .sort((a, b) => (a.nextOccurrence || 0) - (b.nextOccurrence || 0));
-  
-  // Get active events
-  const activeEvents = events.filter(event => event.active);
   
   // Sort teams by pixel count (most pixels first)
   const sortedTeams = [...teams].sort((a, b) => {
@@ -57,54 +41,81 @@ export function StatusBar() {
   return (
     <Card title="Teams Progress Bars" className="animate-fade-in">
       {/* Team progress bars */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {sortedTeams.map(team => {
           const pixelCount = getTeamPixelCount(team.id);
           const percentage = totalPixels === 0 ? 0 : Math.round((pixelCount / totalPixels) * 100);
           const isUserTeam = user?.teamId === team.id;
           
           return (
-            <div key={team.id} className="space-y-1">
+            <div key={team.id} className="space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <div 
                     className="w-3 h-3 rounded-full" 
                     style={{ backgroundColor: team.color }} 
                   />
-                  <span className="text-sm font-medium">{team.name}</span>
-                  {isUserTeam && (
-                    <Badge variant="accent" className="text-xs py-0 px-1">You</Badge>
-                  )}
+                  <span className="text-sm font-medium" style={{ color: isUserTeam ? team.color : 'var(--color-text-primary)' }}>
+                    {team.name}
+                    {isUserTeam && (
+                      <span className="ml-2 text-xs py-0.5 px-1.5 rounded bg-[var(--color-accent-bg)] text-[var(--color-accent)]">
+                        You
+                      </span>
+                    )}
+                  </span>
                 </div>
                 <span className="text-xs font-medium">{percentage}%</span>
               </div>
               
               {/* Progress bar */}
-              <ProgressBar 
-                value={percentage} 
-                max={100}
-                size="sm"
-                color={team.color}
-              />
+              <div className="h-2 w-full bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ 
+                    width: `${percentage}%`,
+                    backgroundColor: team.color,
+                    boxShadow: isUserTeam ? `0 0 8px ${team.color}` : 'none'
+                  }}
+                />
+              </div>
+              
+              <div className="text-xs text-[var(--color-text-tertiary)]">
+                {pixelCount.toLocaleString()} pixels
+              </div>
             </div>
           );
         })}
       </div>
       
       {/* Cooldown status */}
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-between mb-2">
-          {user?.teamId ? (
-            canPlacePixel ? (
-              <Badge variant="success">Ready to place</Badge>
+      {user?.teamId && (
+        <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
+          <div className="flex items-center justify-between">
+            {canPlacePixel ? (
+              <Badge variant="success" className="w-full py-1 flex justify-center">Ready to place pixels</Badge>
             ) : (
-              <Badge variant="warning">Cooldown: {formatTime(cooldownRemaining)}</Badge>
-            )
-          ) : (
-            <Badge variant="error">Join a team first</Badge>
-          )}
+              <div className="w-full">
+                <div className="flex justify-between mb-1">
+                  <span className="text-xs text-[var(--color-text-secondary)]">Cooldown</span>
+                  <span className="text-xs font-medium text-[var(--color-warning)]">{formatTime(cooldownRemaining)}</span>
+                </div>
+                <div className="h-1.5 w-full bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[var(--color-warning)] rounded-full transition-all duration-200"
+                    style={{ width: `${100 - (cooldownRemaining / 10000 * 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+      
+      {!user?.teamId && (
+        <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
+          <Badge variant="error" className="w-full py-1 flex justify-center">Join a team first</Badge>
+        </div>
+      )}
     </Card>
   );
 } 
