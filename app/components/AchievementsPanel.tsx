@@ -49,11 +49,11 @@ const ACHIEVEMENTS: Achievement[] = [
 
 export function AchievementsPanel() {
   const { user } = usePixelWar();
-  const unlockedAchievementIds = user?.achievements || [];
+  const unlockedAchievementIds: string[] = user?.achievements || [];
 
   return (
     <div className="space-y-4">
-      {ACHIEVEMENTS.map((achievement) => {
+      {ACHIEVEMENTS.map((achievement: Achievement) => {
         const isUnlocked = unlockedAchievementIds.includes(achievement.id);
         
         return (
