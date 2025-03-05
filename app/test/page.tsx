@@ -1,25 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../components/ui/Card';
+import { cn } from '@/lib/utils';
 
 export default function TestPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // Use useEffect to handle client-side theme setting
+  useEffect(() => {
+    setIsMounted(true);
+    // Set initial theme based on localStorage or system preference
+    const savedTheme = localStorage.getItem('pixelWarsTheme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setTheme('dark');
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
   
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    document.documentElement.className = newTheme;
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('pixelWarsTheme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('pixelWarsTheme', 'light');
+    }
   };
   
+  // Don't render until client-side
+  if (!isMounted) {
+    return null;
+  }
+  
   return (
-    <div className={`min-h-screen p-8 ${theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className={cn(
+      "min-h-screen p-8",
+      theme === 'dark' ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'
+    )}>
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">UI Test Page</h1>
           <button
             onClick={toggleTheme}
-            className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className={cn(
+              "px-4 py-2 rounded-full transition-colors",
+              theme === 'dark' 
+                ? "bg-blue-600 text-white hover:bg-blue-700" 
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            )}
           >
             Toggle {theme === 'light' ? 'Dark' : 'Light'} Mode
           </button>

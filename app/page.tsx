@@ -9,6 +9,7 @@ import { StatusBar } from './components/StatusBar';
 import { AchievementsPanel } from './components/AchievementsPanel';
 import { AchievementNotification } from './components/AchievementNotification';
 import { Card, CardHeader, CardTitle, CardContent } from './components/ui/Card';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [showAchievements, setShowAchievements] = useState(false);
@@ -18,8 +19,10 @@ export default function Home() {
   useEffect(() => {
     setIsMounted(true);
     // Check if dark mode was previously preferred
-    const savedTheme = localStorage.getItem('pixelWarsTheme') || 'light';
-    if (savedTheme === 'dark') {
+    const savedTheme = localStorage.getItem('pixelWarsTheme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
     } else {
@@ -51,7 +54,10 @@ export default function Home() {
 
   return (
     <PixelWarProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-4 md:p-6 lg:p-8">
+      <div className={cn(
+        "min-h-screen p-4 md:p-6 lg:p-8",
+        isDarkMode ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'
+      )}>
         <div className="container mx-auto max-w-7xl">
           <header className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-3">
@@ -62,7 +68,12 @@ export default function Home() {
             <div className="flex items-center space-x-3">
               <button 
                 onClick={toggleTheme}
-                className="p-2 rounded-full bg-white dark:bg-slate-800 text-gray-800 dark:text-white border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700 shadow-sm transition-all"
+                className={cn(
+                  "p-2 rounded-full border shadow-sm transition-all",
+                  isDarkMode 
+                    ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700" 
+                    : "bg-white text-gray-800 border-gray-200 hover:bg-gray-100"
+                )}
                 aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {isDarkMode ? (
@@ -78,7 +89,12 @@ export default function Home() {
               
               <button 
                 onClick={() => setShowAchievements(!showAchievements)}
-                className="px-4 py-2 rounded-full bg-white dark:bg-slate-800 text-gray-800 dark:text-white border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700 shadow-sm transition-all"
+                className={cn(
+                  "px-4 py-2 rounded-full border shadow-sm transition-all",
+                  isDarkMode 
+                    ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700" 
+                    : "bg-white text-gray-800 border-gray-200 hover:bg-gray-100"
+                )}
               >
                 {showAchievements ? "Back to Game" : "Achievements"}
               </button>

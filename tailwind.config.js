@@ -7,6 +7,19 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    // Add classes that might be dynamically created
+    'dark',
+    'light',
+    'bg-white',
+    'bg-slate-800',
+    'bg-slate-900',
+    'bg-gray-50',
+    'text-white',
+    'text-gray-900',
+    'border-slate-700',
+    'border-gray-200',
+  ],
   darkMode: 'class',
   theme: {
   	container: {
