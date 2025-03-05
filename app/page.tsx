@@ -9,6 +9,7 @@ import { StatusBar } from './components/StatusBar';
 import { AchievementsPanel } from './components/AchievementsPanel';
 import { AchievementNotification } from './components/AchievementNotification';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const [showAchievements, setShowAchievements] = useState<boolean>(false);
@@ -43,10 +44,11 @@ export default function Home() {
             </div>
             
             <Button
-              variant={showAchievements ? 'secondary' : 'accent'}
+              variant={showAchievements ? "secondary" : "default"}
               onClick={() => setShowAchievements(prev => !prev)}
-              leftIcon={showAchievements ? '🎮' : '🏆'}
+              className="gap-2"
             >
+              {showAchievements ? '🎮' : '🏆'}
               {showAchievements ? 'Back to Game' : 'Achievements'}
             </Button>
           </div>

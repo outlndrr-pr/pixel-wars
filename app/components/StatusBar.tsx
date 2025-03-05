@@ -2,8 +2,8 @@
 
 import { usePixelWar } from '../contexts/PixelWarContext';
 import { EventType } from '../types';
-import { Card, Badge, ProgressBar } from './ui';
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 // Helper function to format time in MM:SS
 function formatTime(ms: number): string {
@@ -47,7 +47,7 @@ export function StatusBar() {
                 <span className="text-sm font-medium">
                   {team.name}
                   {isUserTeam && (
-                    <Badge variant="secondary" className="ml-2">
+                    <Badge variant="outline" className="ml-2">
                       You
                     </Badge>
                   )}
@@ -71,7 +71,7 @@ export function StatusBar() {
         <div className="mt-6 pt-6 border-t">
           <div className="space-y-2">
             {canPlacePixel ? (
-              <Badge variant="secondary" className="w-full justify-center">
+              <Badge variant="outline" className="w-full justify-center">
                 Ready to place
               </Badge>
             ) : (
@@ -92,7 +92,7 @@ export function StatusBar() {
 
       {!user?.teamId && (
         <div className="mt-6 pt-6 border-t">
-          <Badge variant="destructive" className="w-full justify-center">
+          <Badge variant="outline" className="w-full justify-center text-destructive">
             Join a team first
           </Badge>
         </div>

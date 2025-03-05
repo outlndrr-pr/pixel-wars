@@ -349,7 +349,7 @@ canvas {
     @apply border-border;
   }
   body {
-    @apply text-foreground;
+    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   :root {
@@ -483,8 +483,6 @@ canvas {
     @apply relative rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden;
   }
 }
-
-
 
 @layer base {
   * {

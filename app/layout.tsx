@@ -8,8 +8,7 @@ import { cn } from "@/lib/utils"
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -17,6 +16,7 @@ export const metadata: Metadata = {
   description: 'A collaborative pixel art canvas game',
   keywords: ["pixel", "place", "canvas", "collaboration", "team", "game", "r/place"],
   authors: [{ name: "Pixel War Team" }],
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({
@@ -25,10 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={cn(
-      inter.variable,
-      "scroll-smooth bg-[#fafafa] dark:bg-[#111111] flex flex-col"
-    )}>
+    <html lang="en" className="dark">
       <head>
         <meta httpEquiv="Content-Security-Policy" content="frame-ancestors 'self' https://pixel-wars-ab9f9.firebaseapp.com https://pixel-8k2n5fvdm-outlndrrs-projects.vercel.app" />
         <meta httpEquiv="Access-Control-Allow-Origin" content="*" />
@@ -36,9 +33,10 @@ export default function RootLayout({
         <meta httpEquiv="Access-Control-Allow-Headers" content="Content-Type, Authorization" />
       </head>
       <body className={cn(
-        "min-h-screen font-sans antialiased bg-[#fafafa] dark:bg-[#111111] text-gray-900 dark:text-gray-100 flex flex-col"
+        "min-h-screen font-sans antialiased",
+        inter.variable
       )}>
-        <main className="flex-1 container mx-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 container mx-auto py-4 md:py-6 lg:py-8">
           <PixelWarProvider>
             {children}
           </PixelWarProvider>
