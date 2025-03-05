@@ -1,5 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: `
+              default-src 'self';
+              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.firebaseio.com https://*.firebase.com;
+              style-src 'self' 'unsafe-inline';
+              img-src 'self' data: https://*.firebase.com https://*.firebaseio.com;
+              connect-src 'self' https://*.firebase.com https://*.firebaseio.com https://*.googleapis.com;
+              frame-src 'self' https://*.firebaseapp.com https://*.firebase.com;
+              font-src 'self';
+              object-src 'none';
+              frame-ancestors 'self' https://pixel-wars-ab9f9.firebaseapp.com https://pixel-pqtnsvfbm-outlndrrs-projects.vercel.app;
+            `.replace(/\s{2,}/g, ' ').trim()
+          }
+        ]
+      }
+    ];
+  },
   reactStrictMode: true,
   swcMinify: true,
   webpack: (config, { isServer }) => {

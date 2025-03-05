@@ -140,4 +140,6 @@ export const signOut = async () => {
     console.error('Error signing out:', error);
     throw error;
   }
-}; 
+};
+
+// Check if file exists and read it before editing 

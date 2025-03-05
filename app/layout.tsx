@@ -1,8 +1,5 @@
 import './globals.css'
-import './dark-theme.css'
-import './force-dark.css'
 import type { Metadata } from 'next'
-import { PixelWarProvider } from './contexts/PixelWarContext'
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils"
 
@@ -25,22 +22,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="light">
       <head>
-        <meta httpEquiv="Content-Security-Policy" content="frame-ancestors 'self' https://pixel-wars-ab9f9.firebaseapp.com https://pixel-8k2n5fvdm-outlndrrs-projects.vercel.app" />
-        <meta httpEquiv="Access-Control-Allow-Origin" content="*" />
-        <meta httpEquiv="Access-Control-Allow-Methods" content="GET, POST, PUT, DELETE, OPTIONS" />
-        <meta httpEquiv="Access-Control-Allow-Headers" content="Content-Type, Authorization" />
+        {/* Security headers should be configured in next.config.js instead */}
       </head>
       <body className={cn(
         "min-h-screen font-sans antialiased",
         inter.variable
       )}>
-        <main className="flex-1 container mx-auto py-4 md:py-6 lg:py-8">
-          <PixelWarProvider>
-            {children}
-          </PixelWarProvider>
-        </main>
+        {children}
       </body>
     </html>
   )

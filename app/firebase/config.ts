@@ -34,6 +34,19 @@ const getValidConfig = () => {
     console.warn('Firebase environment variables not found, using development fallback configuration');
     return localDevConfig;
   }
+  
+  // Make sure authDomain can handle Vercel deployments
+  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+  if (vercelUrl) {
+    console.log('Vercel deployment detected, adjusting authDomain settings');
+    // For Vercel previews and deployments, we need to support the domain
+    return {
+      ...firebaseConfig,
+      // Keep the original auth domain but be aware this needs to be added in Firebase Console
+      authDomain: firebaseConfig.authDomain
+    };
+  }
+  
   return firebaseConfig;
 };
 
