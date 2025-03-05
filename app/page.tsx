@@ -8,7 +8,7 @@ import { TeamSelector } from './components/TeamSelector';
 import { StatusBar } from './components/StatusBar';
 import { AchievementsPanel } from './components/AchievementsPanel';
 import { AchievementNotification } from './components/AchievementNotification';
-import { Button, Card } from './components/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   const [showAchievements, setShowAchievements] = useState<boolean>(false);
@@ -58,42 +58,57 @@ export default function Home() {
               <AchievementsPanel />
             </Card>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Main Canvas Section */}
-              <div className="lg:col-span-8 space-y-6">
-                <div className="canvas-container">
-                  <PixelCanvas />
-                </div>
-                
-                <div className="card p-4">
-                  <h2 className="text-lg font-semibold mb-3">Color Palette</h2>
-                  <ColorPicker />
-                </div>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h1 className="text-4xl font-bold tracking-tight">Pixel Wars</h1>
               </div>
+              
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <Card className="col-span-full lg:col-span-2">
+                  <CardHeader>
+                    <CardTitle>Canvas</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PixelCanvas />
+                  </CardContent>
+                </Card>
 
-              {/* Sidebar */}
-              <div className="lg:col-span-4 space-y-6">
-                <div className="card p-6">
-                  <h2 className="text-lg font-semibold mb-4">Choose Your Team</h2>
-                  <TeamSelector />
-                </div>
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Team Selection</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <TeamSelector />
+                    </CardContent>
+                  </Card>
 
-                <div className="card p-6">
-                  <h2 className="text-lg font-semibold mb-4">Team Progress</h2>
-                  <StatusBar />
-                </div>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Color Palette</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ColorPicker />
+                    </CardContent>
+                  </Card>
 
-                <div className="card p-6">
-                  <h2 className="text-lg font-semibold mb-4">Achievements</h2>
-                  <AchievementsPanel />
-                </div>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Team Progress</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StatusBar />
+                    </CardContent>
+                  </Card>
 
-                <div className="card p-6">
-                  <h2 className="text-lg font-semibold mb-4">About</h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Pixel War is a collaborative pixel art platform where teams compete to create beautiful artwork together.
-                    Choose your team, select your colors, and contribute to the canvas!
-                  </p>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Achievements</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <AchievementsPanel />
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </div>

@@ -1,63 +1,47 @@
 'use client';
 
 import { usePixelWar } from '../contexts/PixelWarContext';
-import { Card } from './ui';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 // Define available colors
 const COLORS = [
-  '#FF0000', // Red
-  '#00FF00', // Green
-  '#0000FF', // Blue
-  '#FFFF00', // Yellow
-  '#FF00FF', // Magenta
-  '#00FFFF', // Cyan
-  '#FFFFFF', // White
-  '#000000', // Black
-  '#FFA500', // Orange
-  '#800080', // Purple
-  '#008000', // Dark Green
-  '#FFC0CB', // Pink
-  '#A52A2A', // Brown
-  '#808080', // Gray
-  '#FFD700', // Gold
-  '#C0C0C0', // Silver
+  "#FF0000", "#00FF00", "#0000FF", "#FFFF00",
+  "#FF00FF", "#00FFFF", "#FF8800", "#8800FF",
+  "#FF0088", "#00FF88", "#0088FF", "#88FF00"
 ];
 
 export function ColorPicker() {
   const { selectedColor, setSelectedColor, user, teams } = usePixelWar();
-  
-  // Get user's team color
-  const userTeamColor = user?.teamId 
-    ? teams.find(team => team.id === user?.teamId)?.color 
-    : null;
+  const userTeam = user?.teamId ? teams.find(team => team.id === user.teamId) : null;
   
   return (
-    <Card title="Color Palette" className="animate-fade-in">
-      {/* Team color indicator */}
-      {userTeamColor && (
-        <div className="mb-4 p-3 rounded-md bg-[var(--color-background)] border border-[var(--color-border)]">
-          <div className="flex items-center gap-2">
-            <div 
-              className="w-6 h-6 rounded-full border border-[var(--color-border)] shadow-sm" 
-              style={{ backgroundColor: userTeamColor }}
-            />
-            <span className="text-sm font-medium">Your team color</span>
-          </div>
+    <div className="space-y-4">
+      {userTeam && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-muted">
+          <div 
+            className="w-4 h-4 rounded-full" 
+            style={{ backgroundColor: userTeam.color }}
+          />
+          <span className="text-sm font-medium">Team Color</span>
         </div>
       )}
       
-      {/* Color grid */}
-      <div className="color-picker">
-        {COLORS.map((color: string) => (
-          <button
+      <div className="grid grid-cols-4 gap-2">
+        {COLORS.map((color) => (
+          <Button
             key={color}
-            className={`color-button ${selectedColor === color ? 'color-button-selected' : ''}`}
+            variant="outline"
+            size="icon"
+            className={cn(
+              "w-full h-10 rounded-md transition-all",
+              selectedColor === color && "ring-2 ring-offset-2 ring-primary"
+            )}
             style={{ backgroundColor: color }}
             onClick={() => setSelectedColor(color)}
-            aria-label={`Select color ${color}`}
           />
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
