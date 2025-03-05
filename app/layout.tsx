@@ -1,5 +1,6 @@
 import './globals.css'
 import './dark-theme.css'
+import './force-dark.css'
 import type { Metadata } from 'next'
 import { PixelWarProvider } from './contexts/PixelWarContext'
 import { Inter } from "next/font/google";
