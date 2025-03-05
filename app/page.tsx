@@ -34,12 +34,12 @@ export default function Home() {
   return (
     <PixelWarProvider>
       <div className="flex flex-col min-h-screen bg-[var(--color-background)]">
-        {/* Modern header with glass effect */}
+        {/* Header with title */}
         <header className="sticky top-0 z-10 backdrop-blur-sm bg-white/80 dark:bg-black/80 border-b border-[var(--color-border)]">
           <div className="container mx-auto px-4 h-16 flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--color-accent)] to-amber-500 flex items-center justify-center text-white font-bold">P</div>
-              <h1 className="text-xl font-semibold tracking-tight">Pixel War</h1>
+              <h1 className="text-xl font-semibold tracking-tight">Pixel Wars</h1>
             </div>
             
             <Button
@@ -60,35 +60,69 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Main canvas area - takes up more space */}
-              <div className="lg:col-span-3 space-y-6">
+              <div className="lg:col-span-2 space-y-6">
                 <Card title="Canvas" subtitle="Place pixels to claim territory for your team" className="animate-fade-in">
                   <div className="aspect-square w-full overflow-hidden rounded-lg border border-[var(--color-border)]">
                     <PixelCanvas />
                   </div>
                 </Card>
-                
-                <StatusBar />
               </div>
               
-              {/* Sidebar - more compact */}
-              <div className="space-y-6">
+              {/* Sidebar - right side components */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Team selector at the top */}
                 <TeamSelector />
-                <ColorPicker />
                 
-                <Card title="About" className="animate-fade-in">
-                  <div className="space-y-3 text-sm">
-                    <p className="text-[var(--color-text-primary)]">
-                      Pixel War is a collaborative canvas where teams compete for territory by placing colored pixels.
-                    </p>
-                    <p className="text-[var(--color-text-primary)]">
-                      Join a team, wait for your cooldown timer, and place pixels to help your team dominate the canvas!
-                    </p>
-                    <div className="pt-2 text-xs text-[var(--color-text-tertiary)]">
-                      Inspired by Reddit's r/Place experiment
+                {/* Two column layout for Color Palette and Team Progress */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ColorPicker />
+                  <StatusBar />
+                </div>
+                
+                {/* Two column layout for Events and Achievements */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card title="Events" className="animate-fade-in">
+                    <div className="space-y-3 text-sm">
+                      <p className="text-[var(--color-text-primary)]">
+                        Special events occur regularly on the canvas.
+                      </p>
+                      <p className="text-[var(--color-text-primary)]">
+                        Participate in events to earn bonuses for your team!
+                      </p>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                  
+                  <Card title="Achievements" className="animate-fade-in">
+                    <div className="space-y-3 text-sm">
+                      <p className="text-[var(--color-text-primary)]">
+                        Complete achievements to showcase your skills.
+                      </p>
+                      <p className="text-[var(--color-text-primary)]">
+                        Click the Achievements button to view all available challenges.
+                      </p>
+                    </div>
+                  </Card>
+                </div>
               </div>
+            </div>
+          )}
+          
+          {/* About section at the bottom */}
+          {!showAchievements && (
+            <div className="mt-6">
+              <Card title="About" className="animate-fade-in">
+                <div className="space-y-3 text-sm">
+                  <p className="text-[var(--color-text-primary)]">
+                    Pixel War is a collaborative canvas where teams compete for territory by placing colored pixels.
+                  </p>
+                  <p className="text-[var(--color-text-primary)]">
+                    Join a team, wait for your cooldown timer, and place pixels to help your team dominate the canvas!
+                  </p>
+                  <div className="pt-2 text-xs text-[var(--color-text-tertiary)]">
+                    Inspired by Reddit's r/Place experiment
+                  </div>
+                </div>
+              </Card>
             </div>
           )}
         </main>

@@ -8,6 +8,7 @@ interface ProgressBarProps {
   variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  color?: string; // Custom color for the progress bar
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({
@@ -18,6 +19,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   variant = 'default',
   size = 'md',
   className = '',
+  color,
 }) => {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
   
@@ -36,7 +38,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   };
   
   const progressBarClasses = `progress-bar ${sizeClasses[size]} ${className}`;
-  const fillClasses = `progress-bar-fill ${variantClasses[variant]}`;
+  const fillClasses = color ? '' : `progress-bar-fill ${variantClasses[variant]}`;
   
   return (
     <div>
@@ -50,7 +52,12 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       <div className={progressBarClasses}>
         <div
           className={fillClasses}
-          style={{ width: `${percentage}%` }}
+          style={{ 
+            width: `${percentage}%`,
+            backgroundColor: color || undefined,
+            height: '100%',
+            borderRadius: 'inherit'
+          }}
           role="progressbar"
           aria-valuenow={value}
           aria-valuemin={0}

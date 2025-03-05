@@ -51,33 +51,35 @@ export function ColorPicker() {
       )}
       
       {/* Color grid */}
-      <div className="grid grid-cols-4 gap-3">
-        {COLORS.map(color => (
+      <div className="grid grid-cols-4 gap-2">
+        {COLORS.map((color) => (
           <button
             key={color}
-            className={`w-12 h-12 rounded-lg transition-all duration-200 shadow-sm ${
+            className={`w-full aspect-square rounded-md border-2 transition-all ${
               selectedColor === color 
-                ? 'ring-2 ring-[var(--color-accent)] ring-offset-2 scale-110' 
-                : 'hover:scale-105 border border-[var(--color-border)]'
+                ? 'border-[var(--color-accent)] scale-110 shadow-md' 
+                : 'border-gray-200 hover:scale-105'
             }`}
             style={{ backgroundColor: color }}
             onClick={() => setSelectedColor(color)}
-            aria-label={`Select ${color} color`}
+            aria-label={`Select color ${color}`}
           />
         ))}
       </div>
       
       {/* Selected color indicator */}
-      <div className="mt-4 flex items-center gap-3 p-3 rounded-md bg-[var(--color-background)]">
-        <div 
-          className="w-10 h-10 rounded-md shadow-sm" 
-          style={{ backgroundColor: selectedColor }}
-        />
-        <div className="flex flex-col">
-          <span className="text-xs text-[var(--color-text-secondary)]">Selected</span>
-          <span className="text-sm font-mono font-medium">{selectedColor}</span>
+      {selectedColor && (
+        <div className="mt-4 p-2 rounded-md bg-[var(--color-background)] border border-[var(--color-border)] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div 
+              className="w-6 h-6 rounded-md border border-[var(--color-border)]" 
+              style={{ backgroundColor: selectedColor }}
+            />
+            <span className="text-sm">Selected</span>
+          </div>
+          <span className="text-xs font-mono">{selectedColor}</span>
         </div>
-      </div>
+      )}
     </Card>
   );
 } 

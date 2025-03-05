@@ -28,7 +28,9 @@ export function StatusBar() {
     colorBombCooldown,
     territoryShieldCooldown,
     canUseColorBomb,
-    canUseTerritoryShield
+    canUseTerritoryShield,
+    teams,
+    getTeamPixelCount
   } = usePixelWar();
   
   // Format cooldown as seconds
@@ -42,134 +44,64 @@ export function StatusBar() {
   // Get active events
   const activeEvents = events.filter(event => event.active);
   
+  // Sort teams by pixel count (most pixels first)
+  const sortedTeams = [...teams].sort((a, b) => {
+    const countA = getTeamPixelCount(a.id);
+    const countB = getTeamPixelCount(b.id);
+    return countB - countA;
+  });
+  
+  // Calculate pixel percentages for the progress bars
+  const totalPixels = sortedTeams.reduce((sum, team) => sum + getTeamPixelCount(team.id), 0);
+  
   return (
-    <Card title="Status" className="animate-fade-in">
-      <div className="flex items-center justify-between mb-4">
-        {user?.teamId ? (
-          canPlacePixel ? (
-            <Badge variant="success">Ready to place</Badge>
-          ) : (
-            <Badge variant="warning">Cooldown: {cooldownSeconds}s</Badge>
-          )
-        ) : (
-          <Badge variant="default">Join a team first</Badge>
-        )}
-      </div>
-      
-      {/* Cooldown progress bar */}
-      {user?.teamId && !canPlacePixel && cooldownRemaining > 0 && (
-        <div className="mb-4">
-          <ProgressBar 
-            value={100 - (cooldownRemaining / 10000 * 100)} 
-            max={100}
-            variant="info"
-          />
-        </div>
-      )}
-      
-      {/* Instructions */}
-      <div className="mb-6 text-sm text-[var(--color-text-secondary)]">
-        {!user?.teamId ? (
-          <p>Select a team to start placing pixels.</p>
-        ) : canPlacePixel ? (
-          <p>Click on the canvas to place a pixel. Each pixel helps your team control territory.</p>
-        ) : (
-          <p>Please wait before placing another pixel. Each team member can place a pixel every 10 seconds.</p>
-        )}
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Power-ups section */}
-        {user?.teamId && (
-          <div className="border border-[var(--color-border)] rounded-lg p-4">
-            <h4 className="font-semibold text-sm mb-3">Power-ups</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="flex items-center mb-2">
-                  <span className="text-lg mr-2">💣</span>
-                  <span className="text-sm font-medium">Color Bomb</span>
+    <Card title="Teams Progress Bars" className="animate-fade-in">
+      {/* Team progress bars */}
+      <div className="space-y-3">
+        {sortedTeams.map(team => {
+          const pixelCount = getTeamPixelCount(team.id);
+          const percentage = totalPixels === 0 ? 0 : Math.round((pixelCount / totalPixels) * 100);
+          const isUserTeam = user?.teamId === team.id;
+          
+          return (
+            <div key={team.id} className="space-y-1">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: team.color }} 
+                  />
+                  <span className="text-sm font-medium">{team.name}</span>
+                  {isUserTeam && (
+                    <Badge variant="accent" className="text-xs py-0 px-1">You</Badge>
+                  )}
                 </div>
-                
-                {canUseColorBomb ? (
-                  <Badge variant="success" className="text-xs">Ready to use!</Badge>
-                ) : (
-                  <>
-                    <ProgressBar
-                      value={100 - (colorBombCooldown / 600000 * 100)}
-                      max={100}
-                      size="sm"
-                    />
-                    <div className="text-xs text-[var(--color-text-tertiary)] mt-1">
-                      Available in {formatTime(colorBombCooldown)}
-                    </div>
-                  </>
-                )}
+                <span className="text-xs font-medium">{percentage}%</span>
               </div>
               
-              <div>
-                <div className="flex items-center mb-2">
-                  <span className="text-lg mr-2">🛡️</span>
-                  <span className="text-sm font-medium">Territory Shield</span>
-                </div>
-                
-                {canUseTerritoryShield ? (
-                  <Badge variant="success" className="text-xs">Ready to use!</Badge>
-                ) : (
-                  <>
-                    <ProgressBar
-                      value={100 - (territoryShieldCooldown / 900000 * 100)}
-                      max={100}
-                      size="sm"
-                    />
-                    <div className="text-xs text-[var(--color-text-tertiary)] mt-1">
-                      Available in {formatTime(territoryShieldCooldown)}
-                    </div>
-                  </>
-                )}
-              </div>
+              {/* Progress bar */}
+              <ProgressBar 
+                value={percentage} 
+                max={100}
+                size="sm"
+                color={team.color}
+              />
             </div>
-          </div>
-        )}
-        
-        {/* Events section */}
-        <div className="border border-[var(--color-border)] rounded-lg p-4">
-          <h4 className="font-semibold text-sm mb-3">Events</h4>
-          
-          {/* Active events */}
-          {activeEvents.length > 0 ? (
-            <div className="mb-3">
-              <div className="text-xs font-medium text-[var(--color-text-tertiary)] mb-2">Active Now:</div>
-              <div className="space-y-2">
-                {activeEvents.map(event => (
-                  <div key={event.type} className="flex items-center text-sm bg-[var(--color-info)] bg-opacity-10 p-2 rounded-md border border-[var(--color-info)] border-opacity-20">
-                    <span className="text-lg mr-2">{eventIcons[event.type]}</span>
-                    <span className="text-[var(--color-info)] dark:text-blue-300 text-sm">{event.description}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          );
+        })}
+      </div>
+      
+      {/* Cooldown status */}
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between mb-2">
+          {user?.teamId ? (
+            canPlacePixel ? (
+              <Badge variant="success">Ready to place</Badge>
+            ) : (
+              <Badge variant="warning">Cooldown: {formatTime(cooldownRemaining)}</Badge>
+            )
           ) : (
-            <div className="text-sm text-[var(--color-text-secondary)] mb-3">No active events</div>
-          )}
-          
-          {/* Upcoming events */}
-          {upcomingEvents.length > 0 && (
-            <div>
-              <div className="text-xs font-medium text-[var(--color-text-tertiary)] mb-2">Coming Soon:</div>
-              <div className="space-y-2">
-                {upcomingEvents.slice(0, 2).map(event => (
-                  <div key={event.type} className="flex justify-between items-center text-sm p-2 rounded-md border border-[var(--color-border)] bg-[var(--color-background)]">
-                    <div className="flex items-center">
-                      <span className="text-lg mr-2">{eventIcons[event.type]}</span>
-                      <span className="font-medium">{event.type}</span>
-                    </div>
-                    <span className="text-xs text-[var(--color-text-tertiary)]">
-                      in {formatTime(event.nextOccurrence! - Date.now())}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <Badge variant="error">Join a team first</Badge>
           )}
         </div>
       </div>
