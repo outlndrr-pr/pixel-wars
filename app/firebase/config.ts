@@ -3,7 +3,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
-import { getAuth, Auth } from 'firebase/auth';
+import { getAuth, Auth, browserLocalPersistence, setPersistence } from 'firebase/auth';
 import { getAnalytics, Analytics, isSupported } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
@@ -61,12 +61,10 @@ function initializeFirebase() {
     const auth = getAuth(app);
     
     // Set auth persistence to LOCAL to avoid CORS issues with iframe auth
-    import('firebase/auth').then(({ browserLocalPersistence, setPersistence }) => {
-      setPersistence(auth, browserLocalPersistence)
-        .catch((error) => {
-          console.error('Error setting auth persistence:', error);
-        });
-    });
+    setPersistence(auth, browserLocalPersistence)
+      .catch((error) => {
+        console.error('Error setting auth persistence:', error);
+      });
     
     const db = getFirestore(app);
     let analytics: Analytics | undefined;
