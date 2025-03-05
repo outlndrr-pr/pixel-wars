@@ -12,134 +12,68 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
-  const [showAchievements, setShowAchievements] = useState<boolean>(false);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
-  
-  // Set mounted state after component mounts to prevent hydration mismatch
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  
+
   if (!isMounted) {
-    // Return a simple loading state or skeleton UI to prevent hydration errors
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="h-12 w-48 bg-[var(--color-border)] rounded-full mb-4"></div>
-          <div className="h-4 w-64 bg-[var(--color-border)] rounded-full"></div>
-        </div>
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-3xl font-bold">Loading...</div>
       </div>
     );
   }
-  
+
   return (
     <PixelWarProvider>
-      <div className="flex flex-col min-h-screen bg-[var(--color-background)]">
-        {/* Header with title */}
-        <header className="sticky top-0 z-10 backdrop-blur-sm bg-black/80 border-b border-[var(--color-border)]">
-          <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--color-accent)] to-amber-500 flex items-center justify-center text-white font-bold">P</div>
-              <h1 className="text-xl font-semibold tracking-tight">Pixel Wars</h1>
-            </div>
-            
-            <Button
-              variant={showAchievements ? "secondary" : "default"}
-              onClick={() => setShowAchievements(prev => !prev)}
-              className="gap-2"
+      <div className="min-h-screen bg-slate-950 text-white p-6">
+        <div className="container mx-auto">
+          <header className="flex items-center justify-between mb-10">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              Pixel Wars
+            </h1>
+            <Button 
+              onClick={() => setShowAchievements(!showAchievements)}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
             >
-              {showAchievements ? '🎮' : '🏆'}
-              {showAchievements ? 'Back to Game' : 'Achievements'}
+              {showAchievements ? "Back to Game" : "Achievements"}
             </Button>
-          </div>
-        </header>
-        
-        <main className="flex-grow container mx-auto px-4 py-8">
+          </header>
+
           {showAchievements ? (
-            <Card title="Your Achievements" className="animate-fade-in">
+            <div className="bg-slate-900 rounded-lg p-6 shadow-xl">
+              <h2 className="text-2xl font-bold mb-6">Your Achievements</h2>
               <AchievementsPanel />
-            </Card>
+            </div>
           ) : (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h1 className="text-4xl font-bold tracking-tight">Pixel Wars</h1>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-slate-900 rounded-lg p-6 shadow-xl">
+                <h2 className="text-2xl font-bold mb-6">Canvas</h2>
+                <PixelCanvas />
               </div>
               
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="col-span-full lg:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Canvas</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <PixelCanvas />
-                  </CardContent>
-                </Card>
-
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Team Selection</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <TeamSelector />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Color Palette</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ColorPicker />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Team Progress</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <StatusBar />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Achievements</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <AchievementsPanel />
-                    </CardContent>
-                  </Card>
+              <div className="space-y-6">
+                <div className="bg-slate-900 rounded-lg p-6 shadow-xl">
+                  <h2 className="text-xl font-bold mb-4">Team Selection</h2>
+                  <TeamSelector />
+                </div>
+                
+                <div className="bg-slate-900 rounded-lg p-6 shadow-xl">
+                  <h2 className="text-xl font-bold mb-4">Color Palette</h2>
+                  <ColorPicker />
+                </div>
+                
+                <div className="bg-slate-900 rounded-lg p-6 shadow-xl">
+                  <h2 className="text-xl font-bold mb-4">Team Progress</h2>
+                  <StatusBar />
                 </div>
               </div>
             </div>
           )}
-        </main>
-        
-        <footer className="border-t border-[var(--color-border)] py-6 mt-auto">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-[var(--color-text-tertiary)]">
-                &copy; {new Date().getFullYear()} Pixel War
-              </p>
-              <div className="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
-                  Terms
-                </a>
-                <a href="#" className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
-                  Privacy
-                </a>
-                <a href="#" className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
-                  GitHub
-                </a>
-              </div>
-            </div>
-          </div>
-        </footer>
-        
-        {/* Achievement notifications */}
-        <AchievementNotification />
+        </div>
       </div>
     </PixelWarProvider>
   );
