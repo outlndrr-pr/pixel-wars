@@ -65,3 +65,5 @@ export const authOptions: NextAuthOptions = {
 // Export the handler
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST }; 
+
+// Triggering a new deployment with this comment 
