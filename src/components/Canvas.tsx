@@ -8,14 +8,19 @@ type CanvasProps = {
 };
 
 const Canvas: React.FC<CanvasProps> = ({ className = '' }) => {
-  const { canvasState, placePixel, canPlacePixel } = useCanvas();
-  const [hoveredCoords, setHoveredCoords] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
-  const scaleRef = useRef(1);
-
-  // Fixed pixel size
-  const pixelSize = 8;
+  const { canvasState, placePixel, canPlacePixel } = useCanvas();
+  const [hoveredCoords, setHoveredCoords] = useState({ x: -1, y: -1 });
   
+  const calculateInitialScale = () => {
+    // Calculate based on viewport size for consistent experience
+    const viewportSize = window.innerWidth < 768 ? 
+      Math.min(window.innerWidth - 80, 600) : // Mobile sizing
+      Math.min(window.innerHeight * 0.7, 700); // Desktop sizing
+      
+    return 1; // Start at 1:1 scale
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!canvasRef.current) return;
@@ -72,7 +77,7 @@ const Canvas: React.FC<CanvasProps> = ({ className = '' }) => {
     <RetroWindow title="Canvas" className={className}>
       <div className="canvas-container">
         <TransformWrapper
-          initialScale={1}
+          initialScale={calculateInitialScale()}
           minScale={1}
           maxScale={20}
           limitToBounds={true}

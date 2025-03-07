@@ -1,0 +1,34 @@
+:root {
+  /* Color system - Dark theme */
+  --color-background: #121212;
+  --color-card: #1e1e1e;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary: #71717a;
+  --color-accent: #ff6b35;
+  --color-accent-dark: #e55a2a;
+  --color-accent-light: #ff8255;
+  --color-accent-bg: rgba(255, 107, 53, 0.1);
+  --color-border: #333333;
+  --color-border-strong: #444444;
+  --color-button-primary: #ffffff;
+  --color-button-primary-hover: #e5e5e5;
+  --color-button-secondary: #333333;
+  --color-button-secondary-hover: #444444;
+  --color-button-disabled: #444444;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  --color-gold: #F6BD16;
+  
+  /* Legacy variables (for backward compatibility) */
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
+  --primary: var(--color-accent);
+  --primary-hover: var(--color-accent-dark);
+  --secondary: var(--color-card);
+  --secondary-hover: var(--color-button-secondary-hover);
+  --accent: var(--color-accent);
+  --border: var(--color-border);
+} 

@@ -1,6 +1,5 @@
 import { Server as NetServer } from 'http';
 import { Socket as NetSocket } from 'net';
-import { NextApiRequest, NextApiResponse } from 'next';
 import { Server as SocketIOServer } from 'socket.io';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -13,27 +12,27 @@ type PixelData = {
   timestamp: number;
 };
 
-type NextApiResponseWithSocket = NextApiResponse & {
-  socket: NetSocket & {
-    server: NetServer & {
-      io?: SocketIOServer;
-    };
-  };
-};
-
 // Track active users and pixels placed
 let activeUsers = 0;
 let pixelsPlaced = 0;
 const recentPixels: PixelData[] = [];
 
-export function GET(req: NextRequest) {
+export function GET(_req: NextRequest) {
   // This isn't a standard HTTP endpoint 
   // Return a simple message for any HTTP requests
   return NextResponse.json({ message: 'Socket.io server' });
 }
 
 export async function POST(req: NextRequest) {
-  const { res }: any = req;
+  type CustomResponse = { 
+    socket: NetSocket & { 
+      server: NetServer & { 
+        io?: SocketIOServer 
+      }
+    } 
+  };
+  
+  const res = req as unknown as CustomResponse;
   
   if (res.socket.server.io) {
     // Socket.io server already running

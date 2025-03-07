@@ -16,7 +16,7 @@ const Stats: React.FC<StatsProps> = ({ className = '' }) => {
   const [isAnonymous, setIsAnonymous] = useState(true);
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { canvasState, timeUntilNextPixel, formattedTime, canPlacePixel } = useCanvas();
+  const { timeUntilNextPixel, formattedTime } = useCanvas();
   
   useEffect(() => {
     // Listen for active user count updates
@@ -25,13 +25,13 @@ const Stats: React.FC<StatsProps> = ({ className = '' }) => {
     });
     
     // Listen for pixel updates (to update total count)
-    const unsubscribePixelUpdate = onPixelUpdate((pixelData) => {
+    const unsubscribePixelUpdate = onPixelUpdate(() => {
       setPixelsPlaced(prev => prev + 1);
     });
     
     // Check if user is anonymous
     if (status === 'authenticated') {
-      setIsAnonymous((session.user as any)?.isAnonymous || false);
+      setIsAnonymous((session.user as { isAnonymous?: boolean })?.isAnonymous || false);
     }
     
     return () => {

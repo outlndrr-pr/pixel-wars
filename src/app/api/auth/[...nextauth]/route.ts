@@ -40,13 +40,13 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.isAnonymous = !!(user as any).isAnonymous;
+        token.isAnonymous = !!(user as { isAnonymous?: boolean }).isAnonymous;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).isAnonymous = token.isAnonymous;
+        (session.user as { isAnonymous?: boolean }).isAnonymous = !!(token as { isAnonymous?: boolean }).isAnonymous;
       }
       return session;
     },
