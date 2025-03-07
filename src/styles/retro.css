@@ -1,0 +1,217 @@
+/* Retro UI Styles */
+:root {
+  --yellow-bg: #f8d848;
+  --grid-color: #e6c23c;
+  --window-border: #000000;
+  --window-bg: #ffffff;
+  --button-bg: #ffffff;
+  --button-border: #000000;
+  --button-text: #000000;
+  --progress-empty: #e0e0e0;
+  --progress-fill: #ff6060;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --pixel-size: 10px;
+}
+
+/* Grid background */
+.grid-bg {
+  background-color: var(--yellow-bg);
+  background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Window component */
+.retro-window {
+  border: 2px solid var(--window-border);
+  background-color: var(--window-bg);
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-window-header {
+  background-color: var(--yellow-bg);
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--window-border);
+}
+
+.retro-window-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.retro-window-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.retro-window-control {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--window-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: white;
+}
+
+.retro-window-control.minimize::after {
+  content: '_';
+  font-size: 8px;
+  line-height: 0;
+}
+
+.retro-window-control.maximize::after {
+  content: '□';
+  font-size: 8px;
+}
+
+.retro-window-control.close::after {
+  content: '×';
+  font-size: 10px;
+}
+
+.retro-window-content {
+  padding: 10px;
+}
+
+/* Button component */
+.retro-button {
+  border: 2px solid var(--button-border);
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 4px 12px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 2px 2px 0 var(--shadow-color);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.retro-button:hover {
+  background-color: #f9f9f9;
+}
+
+.retro-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--shadow-color);
+}
+
+/* Progress bar */
+.retro-progress {
+  width: 100%;
+  height: 20px;
+  background-color: var(--progress-empty);
+  border: 2px solid var(--window-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-progress-fill {
+  height: 100%;
+  background-color: var(--progress-fill);
+  transition: width 0.3s ease-in-out;
+}
+
+/* Color Picker */
+.retro-color-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 4px;
+}
+
+.retro-color-option {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid var(--button-border);
+  cursor: pointer;
+  margin: 0;
+}
+
+.retro-color-option.selected {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+/* Canvas */
+.pixel-canvas {
+  display: grid;
+  background-color: white;
+  border: 2px solid var(--window-border);
+}
+
+.pixel-canvas-container {
+  overflow: hidden;
+  position: relative;
+  background-color: var(--window-bg);
+  border: 2px solid var(--window-border);
+}
+
+/* Loading indicator */
+.retro-loading {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+/* Stats display */
+.retro-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.retro-stat-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Cooldown timer */
+.retro-cooldown {
+  margin-top: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Stars and decorative elements */
+.retro-star {
+  position: absolute;
+  background-color: white;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.retro-cloud {
+  position: absolute;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 20px;
+}
+
+.retro-moon {
+  position: absolute;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+/* Mobile responsiveness */
+@media (min-width: 768px) {
+  .retro-color-picker {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pixel-canvas {
+    max-width: 100%;
+    max-height: 70vh;
+  }
+} 
