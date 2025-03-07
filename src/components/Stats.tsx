@@ -59,7 +59,7 @@ const Stats: React.FC<StatsProps> = ({ className = '' }) => {
         
         <div className="retro-stat-item">
           <span>Pixel Rate:</span>
-          <span>{isAnonymous ? '5' : '10'} per minute</span>
+          <span>{isAnonymous ? '1' : '2'} per 5 minutes</span>
         </div>
         
         {/* Cooldown Timer */}

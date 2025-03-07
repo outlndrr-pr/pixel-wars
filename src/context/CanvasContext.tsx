@@ -61,12 +61,12 @@ export const DEFAULT_COLORS = [
   '#820080', // Purple
 ];
 
-// Updated for different cooldowns based on auth status
+// Updated for different cooldowns based on auth status (5 minutes for anonymous, 2.5 minutes for authenticated)
 const getCooldownTime = (isAnonymous: boolean) => {
   if (isAnonymous) {
-    return parseInt(process.env.NEXT_PUBLIC_COOLDOWN_ANON || '300000', 10); // 5 minutes for anonymous
+    return parseInt(process.env.NEXT_PUBLIC_COOLDOWN_ANON || '300000', 10); // 5 minutes in milliseconds
   }
-  return parseInt(process.env.NEXT_PUBLIC_COOLDOWN_AUTH || '300000', 10); // 5 minutes for authenticated
+  return parseInt(process.env.NEXT_PUBLIC_COOLDOWN_AUTH || '150000', 10); // 2.5 minutes in milliseconds
 };
 
 const initialState: CanvasState = {
