@@ -1,68 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { onUserCountUpdate, onPixelUpdate } from '@/lib/socket';
-import { useSession } from 'next-auth/react';
-import { useCanvas } from '@/context/CanvasContext';
+import React from 'react';
 import RetroWindow from './RetroWindow';
-import RetroButton from './RetroButton';
-import { useRouter } from 'next/navigation';
+import { useCanvas } from '@/context/CanvasContext';
 
 type StatsProps = {
   className?: string;
 };
 
 const Stats: React.FC<StatsProps> = ({ className = '' }) => {
-  const [activeUsers, setActiveUsers] = useState(0);
-  const [pixelsPlaced, setPixelsPlaced] = useState(0);
-  const [isAnonymous, setIsAnonymous] = useState(true);
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const { timeUntilNextPixel, formattedTime } = useCanvas();
+  const { canvasState, timeUntilNextPixel, formattedTime } = useCanvas();
   
-  useEffect(() => {
-    // Listen for active user count updates
-    const unsubscribeUserCount = onUserCountUpdate((count) => {
-      setActiveUsers(count);
-    });
-    
-    // Listen for pixel updates (to update total count)
-    const unsubscribePixelUpdate = onPixelUpdate(() => {
-      setPixelsPlaced(prev => prev + 1);
-    });
-    
-    // Check if user is anonymous
-    if (status === 'authenticated') {
-      setIsAnonymous((session.user as { isAnonymous?: boolean })?.isAnonymous || false);
-    }
-    
-    return () => {
-      unsubscribeUserCount();
-      unsubscribePixelUpdate();
-    };
-  }, [session, status]);
-  
-  const handleSignIn = () => {
-    router.push('/auth/signin');
-  };
-  
+  // You would get these from your backend in a real app
+  const activeUsers = 30; // Placeholder
+  const totalPixelsPlaced = Object.keys(canvasState.pixels).length;
+
   return (
     <RetroWindow title="Stats" className={className}>
-      <div className="p-4 retro-stats">
+      <div className="retro-stats">
         <div className="retro-stat-item">
-          <span>Active Users:</span>
-          <span>{activeUsers}</span>
+          <span>Active Users</span>
+          <span className="font-bold">{activeUsers}</span>
+        </div>
+        <div className="retro-stat-item">
+          <span>Pixels Placed</span>
+          <span className="font-bold">{totalPixelsPlaced}</span>
         </div>
         
-        <div className="retro-stat-item">
-          <span>Pixels Placed:</span>
-          <span>{pixelsPlaced.toLocaleString()}</span>
-        </div>
-        
-        <div className="retro-stat-item">
-          <span>Pixel Rate:</span>
-          <span>{isAnonymous ? '1' : '2'} per 5 minutes</span>
-        </div>
-        
-        {/* Cooldown Timer */}
         <div className="retro-cooldown mt-4">
           {timeUntilNextPixel() > 0 ? (
             <>
@@ -73,14 +35,6 @@ const Stats: React.FC<StatsProps> = ({ className = '' }) => {
             <div className="text-green-600">Ready to place!</div>
           )}
         </div>
-        
-        {isAnonymous && status === 'authenticated' && (
-          <div className="mt-4">
-            <RetroButton onClick={handleSignIn} className="w-full text-sm">
-              Sign In for More Pixels
-            </RetroButton>
-          </div>
-        )}
       </div>
     </RetroWindow>
   );

@@ -1,25 +1,19 @@
 'use client';
 
-import React, { createContext, useState, useContext, useEffect, useCallback, ReactNode } from 'react';
-import { initializeSocket, placePixel as socketPlacePixel, onPixelUpdate } from '@/lib/socket';
-import { useSession } from 'next-auth/react';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { Database, DatabaseReference } from 'firebase/database';
+import { db } from '@/lib/firebase';
+import { ref, onValue, set } from 'firebase/database';
 
 // Canvas size
-export const CANVAS_SIZE = 100;
+const CANVAS_SIZE = 100;
 
 // Types
-export type Pixel = {
+type Pixel = {
   color: string;
   lastUpdated: number;
+  updatedBy?: string;
   deviceType: string;
-};
-
-type PixelUpdate = {
-  x: number;
-  y: number;
-  color: string;
-  timestamp: number;
-  user: string;
 };
 
 type CanvasState = {
@@ -35,14 +29,13 @@ type CanvasState = {
 type CanvasContextType = {
   canvasState: CanvasState;
   setSelectedColor: (color: string) => void;
-  placePixel: (x: number, y: number) => void;
+  placePixel: (x: number, y: number) => Promise<void>;
   canPlacePixel: () => boolean;
   timeUntilNextPixel: () => number;
   formattedTime: string;
-  getPixelAt: (x: number, y: number) => Pixel | undefined;
 };
 
-export const DEFAULT_COLORS = [
+const DEFAULT_COLORS = [
   '#FFFFFF', // White
   '#E4E4E4', // Light Gray
   '#888888', // Gray
@@ -61,13 +54,8 @@ export const DEFAULT_COLORS = [
   '#820080', // Purple
 ];
 
-// Updated for different cooldowns based on auth status (5 minutes for anonymous, 2.5 minutes for authenticated)
-const getCooldownTime = (isAnonymous: boolean) => {
-  if (isAnonymous) {
-    return parseInt(process.env.NEXT_PUBLIC_COOLDOWN_ANON || '300000', 10); // 5 minutes in milliseconds
-  }
-  return parseInt(process.env.NEXT_PUBLIC_COOLDOWN_AUTH || '150000', 10); // 2.5 minutes in milliseconds
-};
+// Default cooldown time in milliseconds (5 minutes)
+const DEFAULT_COOLDOWN = 5 * 60 * 1000;
 
 const initialState: CanvasState = {
   pixels: {},
@@ -83,55 +71,31 @@ const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
 
 export const CanvasProvider = ({ children }: { children: ReactNode }) => {
   const [canvasState, setCanvasState] = useState<CanvasState>(initialState);
-  const [remainingTime, setRemainingTime] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
-  
-  // Check if user is anonymous
-  const isAnonymous = (session?.user as any)?.isAnonymous || !session;
-  
-  // Initialize socket connection
-  useEffect(() => {
-    const socket = initializeSocket();
-    
-    // Listen for pixel updates
-    const unsubscribe = onPixelUpdate((pixelData: PixelUpdate) => {
-      setCanvasState(prev => ({
-        ...prev,
-        pixels: {
-          ...prev.pixels,
-          [`${pixelData.x}-${pixelData.y}`]: {
-            color: pixelData.color,
-            lastUpdated: pixelData.timestamp,
-            deviceType: 'unknown'
-          }
-        }
-      }));
-    });
-    
-    // Clean up on unmount
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const [remainingTime, setRemainingTime] = useState<number>(0);
 
-  // Load canvas data from localStorage (fallback when offline)
+  // Load the canvas data from Firebase
   useEffect(() => {
+    console.log('Setting up Firebase canvas listener...');
     try {
-      const savedCanvas = localStorage.getItem('pixelCanvas');
-      if (savedCanvas) {
-        const pixels = JSON.parse(savedCanvas);
-        setCanvasState(prev => ({
+      const canvasRef = ref(db, 'canvas');
+      const unsubscribe = onValue(canvasRef, (snapshot) => {
+        console.log('Received canvas update:', {
+          exists: snapshot.exists(),
+          numPixels: snapshot.exists() ? Object.keys(snapshot.val()).length : 0,
+          timestamp: new Date().toISOString()
+        });
+        const data = snapshot.val() || {};
+        setCanvasState((prev) => ({
           ...prev,
-          pixels,
+          pixels: data,
           loading: false,
         }));
-      } else {
-        setCanvasState(prev => ({
-          ...prev,
-          loading: false
-        }));
-      }
+      }, (error) => {
+        console.error('Firebase canvas subscription error:', error);
+        setError('Failed to connect to canvas data');
+        setCanvasState(prev => ({ ...prev, loading: false }));
+      });
 
       // Load the last cooldown from localStorage
       const savedCooldown = localStorage.getItem('pixelCooldown');
@@ -148,8 +112,11 @@ export const CanvasProvider = ({ children }: { children: ReactNode }) => {
           setRemainingTime(endsAt - Date.now());
         }
       }
+
+      return () => unsubscribe();
     } catch (error) {
-      console.error('Error loading from localStorage:', error);
+      console.error('Error setting up Firebase listener:', error);
+      setError('Failed to initialize canvas connection');
       setCanvasState(prev => ({ ...prev, loading: false }));
     }
   }, []);
@@ -203,55 +170,61 @@ export const CanvasProvider = ({ children }: { children: ReactNode }) => {
     return !canvasState.cooldown.active;
   };
 
-  const timeUntilNextPixel = useCallback(() => {
+  const timeUntilNextPixel = () => {
     if (!canvasState.cooldown.active) return 0;
-    const remaining = canvasState.cooldown.endsAt - Date.now();
-    return remaining > 0 ? remaining : 0;
-  }, [canvasState.cooldown]);
+    return Math.max(0, canvasState.cooldown.endsAt - Date.now());
+  };
 
-  const placePixel = useCallback((x: number, y: number) => {
-    // Check if user can place a pixel
-    if (!canPlacePixel()) return;
-    
-    const pixelData = {
-      x,
-      y,
-      color: canvasState.selectedColor
-    };
-    
-    // Send pixel to socket
-    socketPlacePixel(pixelData);
-    
-    // Update local state immediately for responsive UI
-    const newPixel: Pixel = {
+  const placePixel = async (x: number, y: number) => {
+    if (!canPlacePixel() || x < 0 || x >= CANVAS_SIZE || y < 0 || y >= CANVAS_SIZE) {
+      console.log('Cannot place pixel:', { x, y, canPlace: canPlacePixel() });
+      return;
+    }
+
+    const pixelKey = `${x}-${y}`;
+    const pixelData: Pixel = {
       color: canvasState.selectedColor,
       lastUpdated: Date.now(),
       deviceType: typeof window !== 'undefined' ? 
         (window.innerWidth <= 768 ? 'mobile' : 'desktop') : 'unknown'
     };
-    
-    setCanvasState(prev => ({
-      ...prev,
-      pixels: {
-        ...prev.pixels,
-        [`${x}-${y}`]: newPixel
-      },
-      cooldown: {
-        active: true,
-        endsAt: Date.now() + getCooldownTime(isAnonymous)
-      }
-    }));
-    
-    // Save cooldown to localStorage
-    localStorage.setItem(
-      'pixelCooldown',
-      JSON.stringify({ endsAt: Date.now() + getCooldownTime(isAnonymous) })
-    );
-  }, [canvasState.selectedColor, canPlacePixel, isAnonymous]);
 
-  const getPixelAt = (x: number, y: number): Pixel | undefined => {
-    const pixelKey = `${x}-${y}`;
-    return canvasState.pixels[pixelKey];
+    console.log('Attempting to place pixel:', {
+      x,
+      y,
+      color: canvasState.selectedColor,
+      deviceType: pixelData.deviceType,
+      timestamp: new Date().toISOString()
+    });
+
+    try {
+      // Update in Firebase
+      await set(ref(db, `canvas/${pixelKey}`), pixelData);
+      console.log('Pixel placed successfully:', {
+        key: pixelKey,
+        data: pixelData,
+        timestamp: new Date().toISOString()
+      });
+
+      // Set cooldown
+      const cooldownEndsAt = Date.now() + DEFAULT_COOLDOWN;
+      setCanvasState((prev) => ({
+        ...prev,
+        cooldown: {
+          active: true,
+          endsAt: cooldownEndsAt,
+        },
+      }));
+
+      // Save cooldown to localStorage
+      localStorage.setItem(
+        'pixelCooldown',
+        JSON.stringify({ endsAt: cooldownEndsAt })
+      );
+    } catch (error) {
+      console.error('Error placing pixel:', error);
+      setError('Failed to place pixel');
+    }
   };
 
   return (
@@ -261,18 +234,16 @@ export const CanvasProvider = ({ children }: { children: ReactNode }) => {
         setSelectedColor,
         placePixel,
         canPlacePixel,
-        timeUntilNextPixel,
+        timeUntilNextPixel: () => remainingTime,
         formattedTime: formatTime(remainingTime),
-        getPixelAt,
       }}
     >
-      {children}
       {error && (
-        <div className="error-notification">
+        <div className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg">
           {error}
-          <button onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
+      {children}
     </CanvasContext.Provider>
   );
 };
@@ -283,4 +254,6 @@ export const useCanvas = (): CanvasContextType => {
     throw new Error('useCanvas must be used within a CanvasProvider');
   }
   return context;
-}; 
+};
+
+export { CANVAS_SIZE, DEFAULT_COLORS }; 

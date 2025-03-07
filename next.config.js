@@ -12,18 +12,18 @@ const nextConfig = {
               script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.firebaseio.com https://*.firebase.com;
               style-src 'self' 'unsafe-inline';
               img-src 'self' data: https://*.firebase.com https://*.firebaseio.com;
-              connect-src 'self' https://*.firebase.com https://*.firebaseio.com https://*.googleapis.com;
+              connect-src 'self' https://*.firebase.com https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com;
               frame-src 'self' https://*.firebaseapp.com https://*.firebase.com;
               font-src 'self';
               object-src 'none';
-              frame-ancestors 'self' https://pixel-wars-ab9f9.firebaseapp.com https://pixel-pqtnsvfbm-outlndrrs-projects.vercel.app;
+              frame-ancestors 'self' https://pixel-wars-ab9f9.firebaseapp.com https://pixel-pqtnsvfbm-outlndrrs-projects.vercel.app https://*.vercel.app;
             `.replace(/\s{2,}/g, ' ').trim()
           }
         ]
       }
     ];
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
   swcMinify: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -54,7 +54,12 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   },
-  transpilePackages: ['firebase', '@firebase']
+  transpilePackages: ['firebase', '@firebase'],
+  images: {
+    domains: ['firebasestorage.googleapis.com'],
+    unoptimized: process.env.NODE_ENV === 'development'
+  },
+  productionBrowserSourceMaps: true
 }
 
 module.exports = nextConfig 

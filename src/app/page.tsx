@@ -10,6 +10,11 @@ import DialogBox from '@/components/DialogBox';
 import RetroWindow from '@/components/RetroWindow';
 import RetroButton from '@/components/RetroButton';
 import { useCanvas } from '@/context/CanvasContext';
+import dynamic from 'next/dynamic';
+
+const DebugInfo = dynamic(() => import('@/components/DebugInfo'), {
+  ssr: false
+});
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -81,6 +86,9 @@ export default function Home() {
 
         {/* Decorative elements */}
         <RetroDecorations />
+
+        {/* Add Debug Info only in development */}
+        {process.env.NODE_ENV === 'development' && <DebugInfo />}
       </div>
     </main>
   );
