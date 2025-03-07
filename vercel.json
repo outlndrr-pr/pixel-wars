@@ -1,7 +1,11 @@
 {
   "version": 2,
-<<<<<<< HEAD
   "regions": ["sfo1"],
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
   "headers": [
     {
       "source": "/api/(.*)",
@@ -13,18 +17,8 @@
       ]
     }
   ],
-  "build": {
-    "env": {
-      "NEXT_TELEMETRY_DISABLED": "1"
-    }
-=======
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "outputDirectory": ".next",
   "env": {
+    "NEXT_TELEMETRY_DISABLED": "1",
     "NODE_VERSION": "18.17.0"
->>>>>>> 5cc09d223339215fb0c943db2fea9f21dbc9c755
   }
 } 
